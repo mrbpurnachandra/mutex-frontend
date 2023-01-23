@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom"
+
 export default function Register() {
     return  <div className="w-full h-screen flex items-center justify-center">
     <div className="-mt-24 w-72 px-4 py-4 max-w-sm">
@@ -25,7 +27,7 @@ export default function Register() {
         </form>
 
         <div className="mt-2">
-            <p className="text-sm text-gray-600">Already have an account? <a href="#"><strong>Login</strong></a></p>
+            <p className="text-sm text-gray-600">Already have an account?  <Link to="/login"><strong>Login</strong></Link> </p>
         </div>
     </div>
 </div>

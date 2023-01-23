@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom"
+
 export default function Login() {
     return <div className="w-full h-screen flex items-center justify-center">
         <div className="-mt-24 w-72 px-4 py-4 max-w-sm">
@@ -17,7 +19,7 @@ export default function Login() {
             </form>
 
             <div className="mt-2">
-                <p className="text-sm text-gray-600">Don't have an account? <a href="#"><strong>Register</strong></a></p>
+                <p className="text-sm text-gray-600">Don't have an account? <Link to="/register"><strong>Register</strong></Link> </p>
             </div>
         </div>
     </div>
