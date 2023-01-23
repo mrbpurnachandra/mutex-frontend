@@ -1,4 +1,4 @@
-import Logout from '../components/Logout'
+import LogoutButton from '../components/LogoutButton'
 import { getUser } from '../utils'
 
 export default function Index() {
@@ -6,7 +6,7 @@ export default function Index() {
 
     return (
         <div>
-            <Logout />
+            <LogoutButton />
             <pre>{JSON.stringify(user, null, 2)}</pre>
         </div>
     )
