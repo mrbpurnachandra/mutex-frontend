@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import Error from '../components/Error'
+import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
 import userSchema from '../schemas/user'
 
@@ -21,13 +21,13 @@ export default function Register() {
     function handleRegister(e) {
         e.preventDefault()
         const userData = Object.fromEntries(new FormData(e.target))
-        mutate(userData) 
+        mutate(userData)
     }
 
     return (
         <div className='w-full h-screen flex items-center justify-center'>
             <div className='-mt-24 w-72 px-4 py-4 max-w-sm'>
-                {error && <Error error={error} />}
+                {error && <ErrorElement error={error} />}
                 <form onSubmit={handleRegister}>
                     <div className='mt-4'>
                         <label className='sr-only' htmlFor='name'>

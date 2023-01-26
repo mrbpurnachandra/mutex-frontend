@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './index.css'
-import Guest from './components/Guest'
-import Auth from './components/Auth'
+import Guest from './guards/Guest'
+import Auth from './guards/Auth'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Index from './pages/Index'
+import NoRole from './guards/NoRole'
+import Role from './pages/Role'
+import HasRole from './guards/HasRole'
+import Teacher from './pages/Teacher'
+import Student from './pages/Student'
 
 const queryClient = new QueryClient()
 
@@ -20,7 +25,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                         path='/'
                         element={
                             <Auth>
-                                <Index />
+                                <HasRole>
+                                    <Index />
+                                </HasRole>
                             </Auth>
                         }
                     />
@@ -40,6 +47,39 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             </Guest>
                         }
                     />
+
+                    <Route path='/role'>
+                        <Route
+                            index
+                            element={
+                                <Auth>
+                                    <NoRole>
+                                        <Role />
+                                    </NoRole>
+                                </Auth>
+                            }
+                        />
+                        <Route
+                            path='teacher'
+                            element={
+                                <Auth>
+                                    <NoRole>
+                                        <Teacher/>
+                                    </NoRole>
+                                </Auth>
+                            }
+                        />
+                        <Route
+                            path='student'
+                            element={
+                                <Auth>
+                                    <NoRole>
+                                        <Student/>  
+                                    </NoRole>
+                                </Auth>
+                            }
+                        />
+                    </Route>
                 </Routes>
             </BrowserRouter>
         </QueryClientProvider>

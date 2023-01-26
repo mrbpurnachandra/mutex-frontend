@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { retriveAuthToken } from '../utils'
 
 const httpClient = axios.create({
     baseURL: 'http://localhost:3000/',
@@ -6,7 +7,12 @@ const httpClient = axios.create({
 })
 
 httpClient.interceptors.request.use(
-    (config) => config,
+    (config) => {
+        const token = retriveAuthToken()
+        if (token) config.headers.Authorization = `Bearer ${token}`
+
+        return config
+    },
     (err) => {
         return Promise.reject({ message: err.message })
     }
@@ -19,6 +25,7 @@ httpClient.interceptors.response.use(
         let status = 500
 
         if (err.response && err.response.status < 500) {
+            console.log(err.response.data)
             message = err.response.data.message
             status = err.response.status
         }
