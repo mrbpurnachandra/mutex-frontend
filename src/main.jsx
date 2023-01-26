@@ -5,14 +5,19 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './index.css'
 import Guest from './guards/Guest'
 import Auth from './guards/Auth'
+import NoRole from './guards/NoRole'
+import HasRole from './guards/HasRole'
+import StudentGuard from './guards/Student'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Index from './pages/Index'
-import NoRole from './guards/NoRole'
 import Role from './pages/Role'
-import HasRole from './guards/HasRole'
 import Teacher from './pages/Teacher'
 import Student from './pages/Student'
+import NotEnrolled from './guards/NotEnrolled'
+import EnrollOptions from './pages/EnrollOptions'
+import JoinExistingClass from './pages/JoinExistingClass'
+import CreateNewClass from './pages/CreateNewClass'
 
 const queryClient = new QueryClient()
 
@@ -64,7 +69,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             element={
                                 <Auth>
                                     <NoRole>
-                                        <Teacher/>
+                                        <Teacher />
                                     </NoRole>
                                 </Auth>
                             }
@@ -74,8 +79,44 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             element={
                                 <Auth>
                                     <NoRole>
-                                        <Student/>  
+                                        <Student />
                                     </NoRole>
+                                </Auth>
+                            }
+                        />
+                        <Route
+                            path='student/enroll-options'
+                            element={
+                                <Auth>
+                                    <StudentGuard>
+                                        <NotEnrolled>
+                                            <EnrollOptions />
+                                        </NotEnrolled>
+                                    </StudentGuard>
+                                </Auth>
+                            }
+                        />
+                        <Route
+                            path='student/join-existing-class'
+                            element={
+                                <Auth>
+                                    <StudentGuard>
+                                        <NotEnrolled>
+                                            <JoinExistingClass />
+                                        </NotEnrolled>
+                                    </StudentGuard>
+                                </Auth>
+                            }
+                        />
+                        <Route
+                            path='student/create-new-class'
+                            element={
+                                <Auth>
+                                    <StudentGuard>
+                                        <NotEnrolled>
+                                            <CreateNewClass />
+                                        </NotEnrolled>
+                                    </StudentGuard>
                                 </Auth>
                             }
                         />
