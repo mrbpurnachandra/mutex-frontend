@@ -17,7 +17,7 @@ export default function Login() {
         {
             onSuccess: (token) => {
                 storeAuthToken(token)
-                navigate('/', { replace: true })
+                return navigate('/', { replace: true })
             },
         }
     )

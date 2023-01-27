@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import Center from '../components/Center'
+import Card from '../components/Card'
 
 export default function EnrollOptions() {
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24'>
+        <Center>
+            <Card>
                 <p className='text-gray-700'>
                     Do you want to join existing class or create a new class?
                 </p>
@@ -21,7 +23,7 @@ export default function EnrollOptions() {
                         Join existing class
                     </Link>
                 </div>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }

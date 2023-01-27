@@ -1,13 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import Card from '../components/Card'
+import Center from '../components/Center'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
 import teacherSchema from '../schemas/teacher'
-import { storeAuthToken } from '../utils'
+import useRefreshToken from '../hooks/useRefreshToken'
 
 export default function Teacher() {
-    const navigate = useNavigate()
-
     const teacherMutation = useMutation({
         mutationFn: (data) => {
             const { error, value: teacherData } = teacherSchema.validate(data)
@@ -18,16 +17,7 @@ export default function Teacher() {
     })
 
     const teacher = teacherMutation.data
-    const tokenQuery = useQuery({
-        queryFn: () => {
-            return httpClient.get('/auth/token')
-        },
-        onSuccess: (token) => {
-            storeAuthToken(token)
-            navigate('/')
-        },
-        enabled: !!teacher,
-    })
+    const errorElem = useRefreshToken(!!teacher)
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -35,20 +25,10 @@ export default function Teacher() {
         teacherMutation.mutate(data)
     }
 
-    if (tokenQuery.isFetching)
-        return (
-            <div className='w-full h-screen flex items-center justify-center'>
-                <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
-                    <p className='text-gray-700'>Refreshing auth token...</p>
-                </div>
-            </div>
-        )
-
-    if (tokenQuery.isError) return <ErrorElement error={tokenQuery.error} />
-
+    if (errorElem) return errorElem
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
+        <Center>
+            <Card>
                 <p className='text-gray-700'>
                     Please provide your description.
                 </p>
@@ -70,7 +50,7 @@ export default function Teacher() {
                         Submit
                     </button>
                 </form>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }

@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import Card from '../components/Card'
+import Center from '../components/Center'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
-import { storeAuthToken } from '../utils'
+import useRefreshToken from '../hooks/useRefreshToken'
 
 export default function Student() {
-    const navigate = useNavigate()
     const studentMutation = useMutation({
         mutationFn: () => {
             return httpClient.post('/student')
@@ -13,36 +13,18 @@ export default function Student() {
     })
 
     const student = studentMutation.data
-    const tokenQuery = useQuery({
-        queryFn: () => {
-            return httpClient.get('/auth/token')
-        },
-        onSuccess: (token) => {
-            storeAuthToken(token)
-            navigate('/')
-        },
-        enabled: !!student,
-    })
+    const errorElem = useRefreshToken(!!student)
 
     function handleSubmit(e) {
         e.preventDefault()
         studentMutation.mutate()
     }
 
-    if (tokenQuery.isFetching)
-        return (
-            <div className='w-full h-screen flex items-center justify-center'>
-                <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
-                    <p className='text-gray-700'>Refreshing auth token...</p>
-                </div>
-            </div>
-        )
-
-    if (tokenQuery.isError) return <ErrorElement error={tokenQuery.error} />
+    if (errorElem) return errorElem
 
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
+        <Center>
+            <Card>
                 <p className='text-gray-700'>
                     Do you really want to register as student?
                 </p>
@@ -54,7 +36,7 @@ export default function Student() {
                         Continue
                     </button>
                 </form>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }

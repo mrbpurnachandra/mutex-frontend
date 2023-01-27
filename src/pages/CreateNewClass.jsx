@@ -2,11 +2,12 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
-import { storeAuthToken } from '../utils'
 import classSchema from '../schemas/class'
+import Center from '../components/Center'
+import Card from '../components/Card'
+import useRefreshToken from '../hooks/useRefreshToken'
 
 export default function CreateNewClass() {
-    const navigate = useNavigate()
 
     const classMutation = useMutation({
         mutationFn: (data) => {
@@ -18,16 +19,7 @@ export default function CreateNewClass() {
     })
 
     const _class = classMutation.data
-    const tokenQuery = useQuery({
-        queryFn: () => {
-            return httpClient.get('/auth/token')
-        },
-        onSuccess: (token) => {
-            storeAuthToken(token)
-            navigate('/')
-        },
-        enabled: !!_class,
-    })
+    const errorElem = useRefreshToken(!!_class)
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -35,23 +27,14 @@ export default function CreateNewClass() {
         classMutation.mutate(data)
     }
 
-    if (tokenQuery.isFetching)
-        return (
-            <div className='w-full h-screen flex items-center justify-center'>
-                <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
-                    <p className='text-gray-700'>Refreshing auth token...</p>
-                </div>
-            </div>
-        )
-
-    if (tokenQuery.isError) return <ErrorElement error={tokenQuery.error} />
+    if (errorElem) return errorElem
 
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24 w-80 px-4 py-4 max-w-sm'>
-                <p className='text-gray-700 flex flex-col'>
+        <Center>
+            <Card>
+                <p className='text-gray-600 flex flex-col'>
                     <span>Please provide necessary details of your class.</span>
-                    <span className='text-xs'>
+                    <span className='mt-4 text-sm text-gray-500'>
                         By creating a new class you'll be CR and VCR of that
                         class. For now you'll be incharge of class for lifetime.
                         Please be responsible for your class.
@@ -86,7 +69,7 @@ export default function CreateNewClass() {
                         Create
                     </button>
                 </form>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }
