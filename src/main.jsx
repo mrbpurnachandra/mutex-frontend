@@ -21,6 +21,7 @@ import JoinExistingClass from './pages/JoinExistingClass'
 import CreateNewClass from './pages/CreateNewClass'
 import Layout from './components/Layout'
 import PendingEnroll from './pages/PendingEnroll'
+import Pending from './guards/Pending'
 
 const queryClient = new QueryClient()
 
@@ -131,7 +132,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                     <Auth>
                                         <StudentGuard>
                                             <Enrolled>
-                                                <PendingEnroll />
+                                                <Pending>
+                                                    <PendingEnroll />
+                                                </Pending>
                                             </Enrolled>
                                         </StudentGuard>
                                     </Auth>
