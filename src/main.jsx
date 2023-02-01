@@ -29,23 +29,24 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <Routes>
-                    <Route
-                        path='/login'
-                        element={
-                            <Guest>
-                                <Login />
-                            </Guest>
-                        }
-                    />
-                    <Route
-                        path='/register'
-                        element={
-                            <Guest>
-                                <Register />
-                            </Guest>
-                        }
-                    />
                     <Route element={<Layout />}>
+                        <Route
+                            path='/login'
+                            element={
+                                <Guest>
+                                    <Login />
+                                </Guest>
+                            }
+                        />
+                        <Route
+                            path='/register'
+                            element={
+                                <Guest>
+                                    <Register />
+                                </Guest>
+                            }
+                        />
+
                         <Route
                             path='/'
                             element={

@@ -1,5 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import Card from '../components/Card'
+import Center from '../components/Center'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
 import authSchema from '../schemas/auth'
@@ -28,8 +30,8 @@ export default function Login() {
         mutate(userData)
     }
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24 w-72 px-4 py-4 max-w-sm'>
+        <Center>
+            <Card>
                 {error && <ErrorElement error={error} />}
                 <form onSubmit={handleLogin}>
                     <div className='mt-4'>
@@ -61,13 +63,13 @@ export default function Login() {
 
                 <div className='mt-2'>
                     <p className='text-sm text-gray-600'>
-                        Don't have an account?
+                        Don't have an account? 
                         <Link to='/register'>
-                            <strong>Register</strong>
+                            <strong> Register</strong>
                         </Link>
                     </p>
                 </div>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }

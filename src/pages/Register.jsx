@@ -1,5 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import Card from '../components/Card'
+import Center from '../components/Center'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
 import userSchema from '../schemas/user'
@@ -25,8 +27,8 @@ export default function Register() {
     }
 
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
-            <div className='-mt-24 w-72 px-4 py-4 max-w-sm'>
+        <Center>
+            <Card>
                 {error && <ErrorElement error={error} />}
                 <form onSubmit={handleRegister}>
                     <div className='mt-4'>
@@ -82,11 +84,11 @@ export default function Register() {
                     <p className='text-sm text-gray-600'>
                         Already have an account?
                         <Link to='/login'>
-                            <strong>Login</strong>
+                            <strong> Login</strong>
                         </Link>
                     </p>
                 </div>
-            </div>
-        </div>
+            </Card>
+        </Center>
     )
 }
