@@ -22,6 +22,8 @@ import CreateNewClass from './pages/CreateNewClass'
 import Layout from './components/Layout'
 import PendingEnroll from './pages/PendingEnroll'
 import Pending from './guards/Pending'
+import ManageTeachers from './pages/ManageTeachers'
+import ManageStudents from './pages/ManageStudents'
 
 const queryClient = new QueryClient()
 
@@ -57,7 +59,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                     </HasRole>
                                 </Auth>
                             }
-                        />
+                        >
+                            <Route path='manage/teachers' 
+                                element={<ManageTeachers/>}
+                            />
+                            <Route path='manage/students' 
+                                element={<ManageStudents/>}
+                            />
+                        </Route>
 
                         <Route path='/role'>
                             <Route

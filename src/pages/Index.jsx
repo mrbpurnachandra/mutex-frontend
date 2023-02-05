@@ -1,6 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import LogoutButton from '../components/LogoutButton'
-import StudentDashboard from '../components/StudentDashboard'
+import Dashboard from '../components/Dashboard'
 import { getUser } from '../utils'
 
 export default function Index() {
@@ -17,6 +16,5 @@ export default function Index() {
     )
         return <Navigate to='/role/student/pending' />
 
-    if(user.student && user.student.enroll && user.student.enroll.status === 'approved') 
-    return <StudentDashboard/>
+    return <Dashboard user={user} />
 }
