@@ -11,7 +11,7 @@ export default function PendingEnroll() {
     const user = getUser()
     const enrollMutation = useMutation({
         mutationFn: () => {
-            return httpClient.post(`/enroll/${user.student.enroll.id}/cancel`)
+            return httpClient.post(`/enroll/${user.student?.enroll?.id}/cancel`)
         },
     })
 
@@ -31,7 +31,7 @@ export default function PendingEnroll() {
                 <p className='flex flex-col space-y-2 text-gray-700'>
                     <span>
                         Your join request to class{' '}
-                        <strong>{user.student.enroll.class.name}</strong> is
+                        <strong>{user.student.enroll?.class?.name}</strong> is
                         pending.
                     </span>
                     <span className='text-sm text-gray-500'>

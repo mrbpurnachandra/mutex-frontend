@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import ErrorElement from '../components/ErrorElement'
+import StudentCard from '../components/StudentCard'
 import httpClient from '../config/axios'
 
 export default function ManageStudents() {
@@ -19,7 +20,9 @@ export default function ManageStudents() {
                 <h4 className='text-gray-700 text-lg'>Manage Students</h4>
             </div>
             <div className='px-8'>
-                <pre>{JSON.stringify(enrollsQuery.data, null, 2)}</pre>
+                {enrollsQuery.data.map((enroll) => (
+                    <StudentCard key={enroll.id} enroll={enroll} />
+                ))}
             </div>
         </div>
     )

@@ -24,6 +24,7 @@ import PendingEnroll from './pages/PendingEnroll'
 import Pending from './guards/Pending'
 import ManageTeachers from './pages/ManageTeachers'
 import ManageStudents from './pages/ManageStudents'
+import Cr from './guards/Cr'
 
 const queryClient = new QueryClient()
 
@@ -60,11 +61,33 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                 </Auth>
                             }
                         >
-                            <Route path='manage/teachers' 
-                                element={<ManageTeachers/>}
+                            <Route
+                                path='manage/teachers'
+                                element={
+                                    <Auth>
+                                        <StudentGuard>
+                                            <Enrolled>
+                                                <Cr>
+                                                    <ManageTeachers />
+                                                </Cr>
+                                            </Enrolled>
+                                        </StudentGuard>
+                                    </Auth>
+                                }
                             />
-                            <Route path='manage/students' 
-                                element={<ManageStudents/>}
+                            <Route
+                                path='manage/students'
+                                element={
+                                    <Auth>
+                                        <StudentGuard>
+                                            <Enrolled>
+                                                <Cr>
+                                                    <ManageStudents />
+                                                </Cr>
+                                            </Enrolled>
+                                        </StudentGuard>
+                                    </Auth>
+                                }
                             />
                         </Route>
 
