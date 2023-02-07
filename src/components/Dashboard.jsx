@@ -1,4 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import { NavLink, Outlet } from 'react-router-dom'
+import httpClient from '../config/axios'
 import { getUser } from '../utils'
 import LogoutButton from './LogoutButton'
 
@@ -12,12 +14,17 @@ function Brand() {
 
 function SideBar() {
     const user = getUser()
-    const isCr =
-        user.student && user.student.id === user.student.enroll.class.crId
+    const isStudent = !!user.student
+    const isTeacher = !!user.teacher
+    const isCr = isStudent && user.student.id === user.student.enroll.class.crId
     return (
         <div className='flex flex-col justify-between w-80 h-full border-r-2 border-gray-300'>
             <div>
                 <Brand />
+                <div className='p-4'>
+                    {isStudent && <StudentChannel />}
+                    {isTeacher && <TeacherChannel />}
+                </div>
             </div>
             <div className='border-t border-gray-300 bg-gray-200 p-4'>
                 {isCr && (
@@ -102,6 +109,66 @@ function SideBar() {
     )
 }
 
+function StudentChannel() {
+    const lecturerQuery = useQuery({
+        queryFn: () => {
+            return httpClient.get('/lecture')
+        },
+        queryKey: ['lecturer'],
+        refetchOnWindowFocus: false,
+    })
+
+    if (lecturerQuery.isLoading) return <div>Loading...</div>
+    if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
+    return (
+        <div>
+            {lecturerQuery.data.map((lecture) => {
+                const classId = lecture.class.id
+                const teacherId = lecture.teacher.id
+
+                return (
+                    <NavLink
+                        key={lecture.id}
+                        to={`/message/${classId}-${teacherId}`}
+                        className={({ isActive }) =>
+                            isActive
+                                ? 'mt-2 flex items-center space-x-4 px-4 py-2 text-blue-100 bg-blue-600 rounded-md '
+                                : 'mt-2 flex items-center space-x-4 px-4 py-2 text-gray-800  rounded-md hover:bg-blue-200'
+                        }
+                    >
+                        <span>
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                                strokeWidth={1.5}
+                                stroke='currentColor'
+                                className='w-6 h-6'
+                            >
+                                <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    d='M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z'
+                                />
+                            </svg>
+                        </span>
+                        <p className='flex flex-col leading-tight'>
+                            <span>{lecture.teacher.user.name}</span>
+                            <span className='text-sm'>
+                                @{lecture.teacher.user.username}
+                            </span>
+                        </p>
+                    </NavLink>
+                )
+            })}
+        </div>
+    )
+}
+
+// TODO - Wrok here
+function TeacherChannel() {
+    return <p>Teacher's navigation</p>
+}
 
 function ContentArea() {
     return (
