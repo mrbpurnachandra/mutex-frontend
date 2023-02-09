@@ -52,7 +52,7 @@ function SideBar() {
                             </p>
                         </NavLink>
                     )}
-                    <CommonChannel />
+                    <CommonChannel isStudent={isStudent} />
                 </div>
             </div>
             <div className='border-t border-gray-300 bg-gray-200 p-4'>
@@ -147,7 +147,8 @@ function CommonChannel({ isStudent }) {
         refetchOnWindowFocus: false,
     })
 
-    if (lecturerQuery.isLoading) return <div>Loading...</div>
+    if (lecturerQuery.isLoading)
+        return <div className='px-4 py-2 text-gray-800'>Loading...</div>
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
     return (
         <>
@@ -236,6 +237,9 @@ function ContentArea() {
 }
 
 export default function Dashboard() {
+    // We can have user which is either enrolled and accepted student or a teacher.
+    // That means we make connection with that auth token
+    //
     return (
         <div className='flex w-full h-full'>
             <SideBar />
