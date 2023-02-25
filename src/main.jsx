@@ -25,6 +25,7 @@ import Pending from './guards/Pending'
 import ManageTeachers from './pages/ManageTeachers'
 import ManageStudents from './pages/ManageStudents'
 import Cr from './guards/Cr'
+import Message from './pages/Message'
 
 const queryClient = new QueryClient()
 
@@ -61,6 +62,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                 </Auth>
                             }
                         >
+                            <Route
+                                path='message/:classId/:receiverId'
+                                element={
+                                    <Auth>
+                                        <HasRole>
+                                            <Message />
+                                        </HasRole>
+                                    </Auth>
+                                }
+                            ></Route>
                             <Route
                                 path='manage/teachers'
                                 element={

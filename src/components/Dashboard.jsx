@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import httpClient from '../config/axios'
+import useSocket from '../hooks/useSocket'
 import { getUser } from '../utils'
 import LogoutButton from './LogoutButton'
+import ErrorElement from '../components/ErrorElement'
 
 function Brand() {
     return (
@@ -15,7 +18,6 @@ function Brand() {
 function SideBar() {
     const user = getUser()
     const isStudent = !!user.student
-    const isTeacher = !!user.teacher
     const isCr = isStudent && user.student.id === user.student.enroll.class.crId
     return (
         <div className='flex flex-col justify-between w-80 h-full border-r-2 border-gray-300'>
@@ -24,7 +26,7 @@ function SideBar() {
                 <div className='p-4'>
                     {isStudent && (
                         <NavLink
-                            to={`/message/home`}
+                            to={`/message/${user.student.enroll.classId}/home`}
                             className={({ isActive }) =>
                                 isActive
                                     ? 'mt-2 flex items-center space-x-4 px-4 py-2 text-blue-100 bg-blue-600 rounded-md '
@@ -186,7 +188,7 @@ function CommonChannel({ isStudent }) {
                 return (
                     <NavLink
                         key={lecture.id}
-                        to={`/message/${classId}-${teacherId}`}
+                        to={`/message/${classId}/${teacherId}`}
                         className={({ isActive }) =>
                             isActive
                                 ? 'mt-2 flex items-center space-x-4 px-4 py-2 text-blue-100 bg-blue-600 rounded-md '
@@ -237,9 +239,22 @@ function ContentArea() {
 }
 
 export default function Dashboard() {
-    // We can have user which is either enrolled and accepted student or a teacher.
-    // That means we make connection with that auth token
-    //
+    const socket = useSocket()
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('connect', () => {
+                socket.emit('send_old_messages')
+            })
+
+            socket.on('old_messages', (messages) => {
+                console.log(messages)
+            })
+
+            socket.on('error', (err) => console.log(err))
+        }
+    }, [socket])
+
     return (
         <div className='flex w-full h-full'>
             <SideBar />
