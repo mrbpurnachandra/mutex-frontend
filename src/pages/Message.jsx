@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import MessageContext from '../context/MessageContext'
+import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
 
 export default function Message() {
@@ -7,16 +9,32 @@ export default function Message() {
     const navigate = useNavigate()
     const { classId, receiverId } = useParams()
 
+    const socket = useContext(SocketContext)
+    const messages = useContext(MessageContext)
+
     const [message, setMessage] = useState('')
 
+    function filterMessages(messages) {
+        const receiver = Number(receiverId)
+        if (isNaN(receiver)) {
+            return messages.filter((message) => message.receiverId === null)
+        }
+
+        return messages.filter((message) => message.receiverId === receiver)
+    }
+
+    const filteredMessages = filterMessages(messages)
+    
     function handleSubmit(e) {
         e.preventDefault()
 
-        console.log({
-            message,
-            classId,
-            receiverId: Number(receiverId),
-        })
+        if (receiverId === 'home') {
+            socket.emit('new_normal_message', {
+                content: message,
+            })
+        }
+
+        setMessage('')
     }
 
     if (
@@ -25,6 +43,8 @@ export default function Message() {
     )
         return navigate('/', { replace: true })
 
+    if (!socket) return <div>Loading...</div>
+
     return (
         <div className='flex flex-col h-full '>
             <div className='px-8 py-4 shadow'>
@@ -32,7 +52,9 @@ export default function Message() {
             </div>
             <div className='relative w-full p-3 overflow-y-scroll h-full'>
                 <ul className='space-y-1.5'>
-                    <MessageCard />
+                    {filteredMessages.map((message) => (
+                        <MessageCard key={message.id} message={message} />
+                    ))}
                 </ul>
             </div>
 
@@ -66,12 +88,12 @@ export default function Message() {
     )
 }
 
-function MessageCard() {
+function MessageCard({ message }) {
     return (
         <li className='flex justify-start'>
             <div className='relative max-w-xl px-4 py-2 text-white rounded-lg bg-blue-700 shadow '>
                 <span className='text-xs'>CR</span>
-                <span className='block'>Good morning </span>
+                <span className='block'>{message.content} </span>
                 <span className='text-xs text-gray-300'>11:20</span>
             </div>
         </li>

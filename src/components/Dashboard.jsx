@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import httpClient from '../config/axios'
 import useSocket from '../hooks/useSocket'
 import { getUser } from '../utils'
 import LogoutButton from './LogoutButton'
 import ErrorElement from '../components/ErrorElement'
+import SocketContext from '../context/SocketContext'
+import MessageContext from '../context/MessageContext'
 
 function Brand() {
     return (
@@ -240,15 +242,18 @@ function ContentArea() {
 
 export default function Dashboard() {
     const socket = useSocket()
+    const [messages, setMessages] = useState([])
 
+    const lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
+    
     useEffect(() => {
         if (socket) {
             socket.on('connect', () => {
-                socket.emit('send_old_messages')
+                socket.emit('send_old_messages', lastMessageId)
             })
 
-            socket.on('old_messages', (messages) => {
-                console.log(messages)
+            socket.on('old_messages', (old_messages) => {
+                setMessages((messages) => [...messages, ...old_messages])
             })
 
             socket.on('error', (err) => console.log(err))
@@ -256,9 +261,13 @@ export default function Dashboard() {
     }, [socket])
 
     return (
-        <div className='flex w-full h-full'>
-            <SideBar />
-            <ContentArea />
-        </div>
+        <SocketContext.Provider value={socket}>
+            <MessageContext.Provider value={messages}>
+                <div className='flex w-full h-full'>
+                    <SideBar />
+                    <ContentArea />
+                </div>
+            </MessageContext.Provider>
+        </SocketContext.Provider>
     )
 }
