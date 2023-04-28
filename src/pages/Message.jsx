@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import MessageContext from '../context/MessageContext'
 import SocketContext from '../context/SocketContext'
@@ -13,6 +13,7 @@ export default function Message() {
     const messages = useContext(MessageContext)
 
     const [message, setMessage] = useState('')
+    const boxRef = useRef(null)
 
     function filterMessages(messages) {
         const receiver = Number(receiverId)
@@ -20,11 +21,15 @@ export default function Message() {
             return messages.filter((message) => message.receiverId === null)
         }
 
-        return messages.filter((message) => message.receiverId === receiver)
+        if(user.student) {
+            return messages.filter((message) => message.receiverId === receiver || message.senderId === receiver )
+        }
+
+        return messages.filter((message) => message.classId === Number(classId) )
     }
 
     const filteredMessages = filterMessages(messages)
-    
+
     function handleSubmit(e) {
         e.preventDefault()
 
@@ -32,10 +37,22 @@ export default function Message() {
             socket.emit('new_normal_message', {
                 content: message,
             })
+        } else {
+            socket.emit('new_special_message', {
+                content: message, 
+                classId, 
+                receiverId
+            })
         }
 
         setMessage('')
     }
+
+    useEffect(() => {
+        if (boxRef.current) {
+            boxRef.current.scrollTop = boxRef.current.scrollHeight
+        }
+    })
 
     if (
         user.student &&
@@ -50,7 +67,10 @@ export default function Message() {
             <div className='px-8 py-4 shadow'>
                 <h4 className='text-gray-700 text-lg'>Message</h4>
             </div>
-            <div className='relative w-full p-3 overflow-y-scroll h-full'>
+            <div
+                className='relative w-full p-3 overflow-y-scroll h-full'
+                ref={boxRef}
+            >
                 <ul className='space-y-1.5'>
                     {filteredMessages.map((message) => (
                         <MessageCard key={message.id} message={message} />
@@ -89,12 +109,27 @@ export default function Message() {
 }
 
 function MessageCard({ message }) {
+    const user = getUser()
+
+    let style = 'relative max-w-xl px-4 py-2 rounded-lg shadow'
+
+    style +=
+        user.id === message.senderId
+            ? 'text-gray-800 bg-gray-200'
+            : 'text-gray-50 bg-blue-700'
+
     return (
-        <li className='flex justify-start'>
-            <div className='relative max-w-xl px-4 py-2 text-white rounded-lg bg-blue-700 shadow '>
-                <span className='text-xs'>CR</span>
+        <li
+            className={
+                user.id === message.senderId
+                    ? 'flex justify-end'
+                    : 'flex justify-start'
+            }
+        >
+            <div className={style}>
+                <span className='text-xs'>{message.sender.name}</span>
                 <span className='block'>{message.content} </span>
-                <span className='text-xs text-gray-300'>11:20</span>
+                <span className='text-xs'>{message.createdAt}</span>
             </div>
         </li>
     )

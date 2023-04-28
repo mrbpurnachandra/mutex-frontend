@@ -185,12 +185,12 @@ function CommonChannel({ isStudent }) {
             </NavLink>
             {lecturerQuery.data.map((lecture) => {
                 const classId = lecture.class.id
-                const teacherId = lecture.teacher.id
-
+                const teacherId = lecture.teacher.user.id
+                const receiverId = isStudent ? teacherId : lecture.class.cr.userId
                 return (
                     <NavLink
                         key={lecture.id}
-                        to={`/message/${classId}/${teacherId}`}
+                        to={`/message/${classId}/${receiverId}`}
                         className={({ isActive }) =>
                             isActive
                                 ? 'mt-2 flex items-center space-x-4 px-4 py-2 text-blue-100 bg-blue-600 rounded-md '
@@ -240,20 +240,27 @@ function ContentArea() {
     )
 }
 
+let lastMessageId
 export default function Dashboard() {
     const socket = useSocket()
     const [messages, setMessages] = useState([])
 
-    const lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
-    
+    lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
+
     useEffect(() => {
         if (socket) {
             socket.on('connect', () => {
+                console.log('Requesting old messages')
                 socket.emit('send_old_messages', lastMessageId)
             })
 
             socket.on('old_messages', (old_messages) => {
                 setMessages((messages) => [...messages, ...old_messages])
+            })
+
+            socket.on('new_message', (message) => {
+                console.log('new Message')
+                setMessages((messages) => [...messages, message])
             })
 
             socket.on('error', (err) => console.log(err))
