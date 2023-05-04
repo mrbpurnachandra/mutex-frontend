@@ -26,6 +26,7 @@ import ManageTeachers from './pages/ManageTeachers'
 import ManageStudents from './pages/ManageStudents'
 import Cr from './guards/Cr'
 import Message from './pages/Message'
+import Announcement from './pages/Announcement'
 
 const queryClient = new QueryClient()
 
@@ -68,6 +69,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                     <Auth>
                                         <HasRole>
                                             <Message />
+                                        </HasRole>
+                                    </Auth>
+                                }
+                            ></Route>
+                            <Route
+                                path='announcements'
+                                element={
+                                    <Auth>
+                                        <HasRole>
+                                            <Announcement />
                                         </HasRole>
                                     </Auth>
                                 }

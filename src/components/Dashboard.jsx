@@ -8,6 +8,7 @@ import LogoutButton from './LogoutButton'
 import ErrorElement from '../components/ErrorElement'
 import SocketContext from '../context/SocketContext'
 import MessageContext from '../context/MessageContext'
+import AnnouncementContext from '../context/AnnouncementContext'
 
 function Brand() {
     return (
@@ -154,10 +155,11 @@ function CommonChannel({ isStudent }) {
     if (lecturerQuery.isLoading)
         return <div className='px-4 py-2 text-gray-800'>Loading...</div>
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
+
     return (
         <>
             <NavLink
-                to={`/message/announcements`}
+                to={`/announcements`}
                 className={({ isActive }) =>
                     isActive
                         ? 'mt-2 flex items-center space-x-4 px-4 py-2 text-blue-100 bg-blue-600 rounded-md '
@@ -186,7 +188,9 @@ function CommonChannel({ isStudent }) {
             {lecturerQuery.data.map((lecture) => {
                 const classId = lecture.class.id
                 const teacherId = lecture.teacher.user.id
-                const receiverId = isStudent ? teacherId : lecture.class.cr.userId
+                const receiverId = isStudent
+                    ? teacherId
+                    : lecture.class.cr.userId
                 return (
                     <NavLink
                         key={lecture.id}
@@ -241,26 +245,36 @@ function ContentArea() {
 }
 
 let lastMessageId
+let lastAnnouncementId
 export default function Dashboard() {
     const socket = useSocket()
     const [messages, setMessages] = useState([])
+    const [announcements, setAnnouncements] = useState([])
 
     lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
+    lastAnnouncementId = announcements.sort((a, b) => a.id - b.id).at(0)?.id
 
     useEffect(() => {
         if (socket) {
             socket.on('connect', () => {
-                console.log('Requesting old messages')
                 socket.emit('send_old_messages', lastMessageId)
+                socket.emit('send_old_announcements', lastAnnouncementId)
             })
 
             socket.on('old_messages', (old_messages) => {
                 setMessages((messages) => [...messages, ...old_messages])
             })
 
+            socket.on('old_announcements', (old_announcements) => {
+                setAnnouncements((announcements) => [...announcements, ...old_announcements])
+            })
+
             socket.on('new_message', (message) => {
-                console.log('new Message')
                 setMessages((messages) => [...messages, message])
+            })
+
+            socket.on('new_announcement', (announcement) => {
+                setAnnouncements((announcements) => [...announcements, announcement])
             })
 
             socket.on('error', (err) => console.log(err))
@@ -270,10 +284,12 @@ export default function Dashboard() {
     return (
         <SocketContext.Provider value={socket}>
             <MessageContext.Provider value={messages}>
-                <div className='flex w-full h-full'>
-                    <SideBar />
-                    <ContentArea />
-                </div>
+                <AnnouncementContext.Provider value={announcements}>
+                    <div className='flex w-full h-full'>
+                        <SideBar />
+                        <ContentArea />
+                    </div>
+                </AnnouncementContext.Provider>
             </MessageContext.Provider>
         </SocketContext.Provider>
     )
