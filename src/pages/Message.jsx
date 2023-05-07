@@ -1,8 +1,13 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import MessageContext from '../context/MessageContext'
+import {
+    MessageContext,
+    MessageDispatchContext,
+} from '../context/MessageContext'
 import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
+import { useQuery } from '@tanstack/react-query'
+import httpClient from '../config/axios'
 
 export default function Message() {
     const user = getUser()
@@ -11,8 +16,10 @@ export default function Message() {
 
     const socket = useContext(SocketContext)
     const messages = useContext(MessageContext)
+    const messageDispatch = useContext(MessageDispatchContext)
 
     const [message, setMessage] = useState('')
+    const [lastMessageId, setLastMessageId] = useState(undefined)
     const boxRef = useRef(null)
 
     function filterMessages(messages) {
@@ -21,14 +28,36 @@ export default function Message() {
             return messages.filter((message) => message.receiverId === null)
         }
 
-        if(user.student) {
-            return messages.filter((message) => message.receiverId === receiver || message.senderId === receiver )
+        if (user.student) {
+            return messages.filter(
+                (message) =>
+                    message.receiverId === receiver ||
+                    message.senderId === receiver
+            )
         }
 
-        return messages.filter((message) => message.classId === Number(classId) )
+        return messages.filter((message) => message.classId === Number(classId))
     }
 
     const filteredMessages = filterMessages(messages)
+
+    useQuery({
+        queryFn: () => {
+            return httpClient.get(
+                `/message/${classId}/${receiverId}/${lastMessageId}`
+            )
+        },
+        queryKey: ['lecturer', lastMessageId],
+        refetchOnWindowFocus: false,
+        onSuccess: (oldMessages) => {
+            messageDispatch({
+                type: 'ADD_OLD_MESSAGES',
+                payload: oldMessages,
+            })
+        },
+
+        enabled: !!lastMessageId,
+    })
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -39,9 +68,9 @@ export default function Message() {
             })
         } else {
             socket.emit('new_special_message', {
-                content: message, 
-                classId, 
-                receiverId
+                content: message,
+                classId,
+                receiverId,
             })
         }
 
@@ -67,10 +96,25 @@ export default function Message() {
             <div className='px-8 py-4 shadow'>
                 <h4 className='text-gray-700 text-lg'>Message</h4>
             </div>
+
             <div
                 className='relative w-full p-3 overflow-y-scroll h-full'
                 ref={boxRef}
             >
+                <div className='py-1 flex item-center justify-center'>
+                    <button
+                        type='button'
+                        className='py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
+                        onClick={() => {
+                            const lastMessageId = filteredMessages
+                                .sort((a, b) => a.id - b.id)
+                                .at(0)?.id
+                            setLastMessageId(lastMessageId ?? messages[messages.length -1].id)
+                        }}
+                    >
+                        More
+                    </button>
+                </div>
                 <ul className='space-y-1.5'>
                     {filteredMessages.map((message) => (
                         <MessageCard key={message.id} message={message} />

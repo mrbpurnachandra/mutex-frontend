@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import httpClient from '../config/axios'
 import useSocket from '../hooks/useSocket'
@@ -7,7 +7,11 @@ import { getUser } from '../utils'
 import LogoutButton from './LogoutButton'
 import ErrorElement from '../components/ErrorElement'
 import SocketContext from '../context/SocketContext'
-import MessageContext from '../context/MessageContext'
+import {
+    MessageContext,
+    MessageDispatchContext,
+    messageReducer,
+} from '../context/MessageContext'
 import AnnouncementContext from '../context/AnnouncementContext'
 
 function Brand() {
@@ -248,8 +252,8 @@ let lastMessageId
 let lastAnnouncementId
 export default function Dashboard() {
     const socket = useSocket()
-    const [messages, setMessages] = useState([])
     const [announcements, setAnnouncements] = useState([])
+    const [messages, messageDispatch] = useReducer(messageReducer, [])
 
     lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
     lastAnnouncementId = announcements.sort((a, b) => a.id - b.id).at(0)?.id
@@ -262,34 +266,49 @@ export default function Dashboard() {
             })
 
             socket.on('old_messages', (old_messages) => {
-                setMessages((messages) => [...messages, ...old_messages])
+                messageDispatch({
+                    type: 'ADD_OLD_MESSAGES',
+                    payload: old_messages,
+                })
             })
 
             socket.on('old_announcements', (old_announcements) => {
-                setAnnouncements((announcements) => [...announcements, ...old_announcements])
+                setAnnouncements((announcements) => [
+                    ...announcements,
+                    ...old_announcements,
+                ])
             })
 
             socket.on('new_message', (message) => {
-                setMessages((messages) => [...messages, message])
+                messageDispatch({
+                    type: 'ADD_NEW_MESSAGE',
+                    payload: message,
+                })
             })
 
             socket.on('new_announcement', (announcement) => {
-                setAnnouncements((announcements) => [...announcements, announcement])
+                setAnnouncements((announcements) => [
+                    ...announcements,
+                    announcement,
+                ])
             })
 
             socket.on('error', (err) => console.log(err))
         }
     }, [socket])
 
+
     return (
         <SocketContext.Provider value={socket}>
             <MessageContext.Provider value={messages}>
-                <AnnouncementContext.Provider value={announcements}>
-                    <div className='flex w-full h-full'>
-                        <SideBar />
-                        <ContentArea />
-                    </div>
-                </AnnouncementContext.Provider>
+                <MessageDispatchContext.Provider value={messageDispatch}>
+                    <AnnouncementContext.Provider value={announcements}>
+                        <div className='flex w-full h-full'>
+                            <SideBar />
+                            <ContentArea />
+                        </div>
+                    </AnnouncementContext.Provider>
+                </MessageDispatchContext.Provider>
             </MessageContext.Provider>
         </SocketContext.Provider>
     )
