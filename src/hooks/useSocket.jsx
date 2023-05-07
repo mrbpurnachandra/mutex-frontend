@@ -11,6 +11,7 @@ export default function useSocket() {
             auth: {
                 token: retriveAuthToken(),
             },
+            transports: ['websocket', 'polling'],
         })
 
         setSocket(socket)
