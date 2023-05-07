@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { retriveAuthToken } from '../utils'
 
+const baseURL = import.meta.env.API_BASE_URL || 'http://localhost:3000'
+
 const httpClient = axios.create({
-    baseURL: 'http://localhost:3000/',
+    baseURL,
     responseType: 'json',
 })
 

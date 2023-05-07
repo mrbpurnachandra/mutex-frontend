@@ -6,7 +6,8 @@ export default function useSocket() {
     const [socket, setSocket] = useState(null)
 
     useEffect(() => {
-        const socket = io('http://localhost:3000', {
+        const baseUrl = import.meta.env.API_BASE_URL || 'http://localhost:3000'
+        const socket = io(baseUrl, {
             auth: {
                 token: retriveAuthToken(),
             },
