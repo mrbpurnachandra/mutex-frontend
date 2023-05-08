@@ -8,6 +8,7 @@ import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
 import { useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
+import ImageUpload from '../components/ImageUpload'
 
 export default function Message() {
     const user = getUser()
@@ -19,6 +20,7 @@ export default function Message() {
     const messageDispatch = useContext(MessageDispatchContext)
 
     const [message, setMessage] = useState('')
+    const [messageImg, setMessageImg] = useState(null)
     const [lastMessageId, setLastMessageId] = useState(undefined)
     const boxRef = useRef(null)
 
@@ -62,19 +64,26 @@ export default function Message() {
     function handleSubmit(e) {
         e.preventDefault()
 
+        const payload = {
+            content: message,
+        }
+
+        if (messageImg) {
+            payload.image = messageImg
+        }
+
         if (receiverId === 'home') {
-            socket.emit('new_normal_message', {
-                content: message,
-            })
+            socket.emit('new_normal_message', payload)
         } else {
             socket.emit('new_special_message', {
-                content: message,
+                ...payload,
                 classId,
                 receiverId,
             })
         }
 
         setMessage('')
+        setMessageImg(null)
     }
 
     useEffect(() => {
@@ -109,7 +118,10 @@ export default function Message() {
                             const lastMessageId = filteredMessages
                                 .sort((a, b) => a.id - b.id)
                                 .at(0)?.id
-                            setLastMessageId(lastMessageId ?? messages[messages.length -1].id)
+                            setLastMessageId(
+                                lastMessageId ??
+                                    messages[messages.length - 1].id
+                            )
                         }}
                     >
                         More
@@ -123,30 +135,42 @@ export default function Message() {
             </div>
 
             <div className='w-full p-3 border-t border-gray-300'>
-                <form
-                    onSubmit={handleSubmit}
-                    className=' flex items-center justify-between '
-                >
-                    <input
-                        type='text'
-                        placeholder='Message'
-                        className='block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700'
-                        name='message'
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        required
-                    />
-                    <button type='submit'>
-                        <svg
-                            className='w-5 h-5 text-gray-500 origin-center transform rotate-90'
-                            xmlns='http://www.w3.org/2000/svg'
-                            viewBox='0 0 20 20'
-                            fill='currentColor'
-                        >
-                            <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z' />
-                        </svg>
-                    </button>
-                </form>
+                {messageImg && (
+                    <div>
+                        <img
+                            className='w-24 max-h-24 rounded-lg object-cover object-center shadow-lg'
+                            src={messageImg}
+                        />
+                    </div>
+                )}
+                <div className=' flex items-center justify-between '>
+                    <div className='w-24'>
+                        <ImageUpload onImageChange={setMessageImg} />
+                    </div>
+                    <form
+                        onSubmit={handleSubmit}
+                        className='flex-1 flex items-center justify-between '
+                    >
+                        <input
+                            type='text'
+                            placeholder='Message'
+                            className='block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700'
+                            name='message'
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                        />
+                        <button type='submit'>
+                            <svg
+                                className='w-5 h-5 text-gray-500 origin-center transform rotate-90'
+                                xmlns='http://www.w3.org/2000/svg'
+                                viewBox='0 0 20 20'
+                                fill='currentColor'
+                            >
+                                <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z' />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     )
@@ -173,6 +197,12 @@ function MessageCard({ message }) {
             <div className={style}>
                 <span className='text-xs'>{message.sender.name}</span>
                 <span className='block'>{message.content} </span>
+                {message.image && (
+                    <img
+                        className='w-64 rounded-lg object-cover object-center shadow-md'
+                        src={message.image}
+                    />
+                )}
                 <span className='text-xs'>{message.createdAt}</span>
             </div>
         </li>
