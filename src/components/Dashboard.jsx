@@ -13,6 +13,7 @@ import {
     messageReducer,
 } from '../context/MessageContext'
 import AnnouncementContext from '../context/AnnouncementContext'
+import { toast } from 'react-toastify'
 
 function Brand() {
     return (
@@ -293,10 +294,22 @@ export default function Dashboard() {
                 ])
             })
 
-            socket.on('error', (err) => console.log(err))
+            socket.on('error', (err) => {
+                if (err.message) {
+                    toast.error(err.message, {
+                        position: 'bottom-right',
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light',
+                    })
+                }
+            })
         }
     }, [socket])
-
 
     return (
         <SocketContext.Provider value={socket}>
