@@ -132,7 +132,7 @@ export default function Announcement() {
                     </div>
                     <form
                         onSubmit={handleSubmit}
-                        className=' flex items-center justify-between '
+                        className='flex-1 flex items-center justify-between '
                     >
                         <input
                             type='text'
