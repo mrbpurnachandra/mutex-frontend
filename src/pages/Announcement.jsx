@@ -60,11 +60,20 @@ export default function Announcement() {
 
         setAnnouncement('')
         setAnnouncementImg(null)
+        boxRef.current.scrollTop = boxRef.current.scrollHeight
     }
 
     useEffect(() => {
         if (boxRef.current) {
-            boxRef.current.scrollTop = boxRef.current.scrollHeight
+            const shouldBeScrolled =
+                Math.abs(
+                    boxRef.current.scrollHeight -
+                        boxRef.current.clientHeight -
+                        boxRef.current.scrollTop
+                ) < 300
+            if (shouldBeScrolled) {
+                boxRef.current.scrollTop = boxRef.current.scrollHeight
+            }
         }
     })
 

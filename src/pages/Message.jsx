@@ -94,11 +94,20 @@ export default function Message() {
 
         setMessage('')
         setMessageImg(null)
+        boxRef.current.scrollTop = boxRef.current.scrollHeight
     }
 
     useEffect(() => {
         if (boxRef.current) {
-            boxRef.current.scrollTop = boxRef.current.scrollHeight
+            const shouldBeScrolled =
+                Math.abs(
+                    boxRef.current.scrollHeight -
+                        boxRef.current.clientHeight -
+                        boxRef.current.scrollTop
+                ) < 500
+            if (shouldBeScrolled) {
+                boxRef.current.scrollTop = boxRef.current.scrollHeight
+            }
         }
     })
 
