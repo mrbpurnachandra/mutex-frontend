@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import ErrorElement from '../components/ErrorElement'
 import httpClient from '../config/axios'
 import classSchema from '../schemas/class'

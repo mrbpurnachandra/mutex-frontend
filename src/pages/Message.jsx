@@ -6,9 +6,10 @@ import {
 } from '../context/MessageContext'
 import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ImageUpload from '../components/ImageUpload'
+import { toast } from 'react-toastify'
 
 export default function Message() {
     const user = getUser()
@@ -59,6 +60,15 @@ export default function Message() {
         },
 
         enabled: !!lastMessageId,
+    })
+
+    const messageDeleteMutation = useMutation({
+        mutationFn: (messageId) => {
+            return httpClient.delete(`/message/${messageId}`)
+        },
+        onError: (e) => {
+            toast.error(e.message)
+        },
     })
 
     function handleSubmit(e) {
@@ -129,7 +139,11 @@ export default function Message() {
                 </div>
                 <ul className='space-y-1.5'>
                     {filteredMessages.map((message) => (
-                        <MessageCard key={message.id} message={message} />
+                        <MessageCard
+                            key={message.id}
+                            message={message}
+                            onMessageDelete={messageDeleteMutation.mutate}
+                        />
                     ))}
                 </ul>
             </div>
@@ -176,7 +190,7 @@ export default function Message() {
     )
 }
 
-function MessageCard({ message }) {
+function MessageCard({ message, onMessageDelete }) {
     const user = getUser()
 
     let style = 'relative max-w-xl px-4 py-2 rounded-lg shadow'
@@ -186,6 +200,7 @@ function MessageCard({ message }) {
             ? 'text-gray-800 bg-gray-200'
             : 'text-gray-50 bg-blue-700'
 
+    const canDelete = getUser().id === message.senderId
     return (
         <li
             className={
@@ -195,7 +210,27 @@ function MessageCard({ message }) {
             }
         >
             <div className={style}>
-                <span className='text-xs'>{message.sender.name}</span>
+                <div className='py-2 flex items-center justify-between'>
+                    <span className='text-xs'>{message.sender.name}</span>
+                    {canDelete && (
+                        <button onClick={() => onMessageDelete(message.id)}>
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                                strokeWidth={1.5}
+                                stroke='currentColor'
+                                className='w-4 h-4  '
+                            >
+                                <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    d='M6 18L18 6M6 6l12 12'
+                                />
+                            </svg>
+                        </button>
+                    )}
+                </div>
                 <span className='block'>{message.content} </span>
                 {message.image && (
                     <img

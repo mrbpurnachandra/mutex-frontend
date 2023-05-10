@@ -287,6 +287,13 @@ export default function Dashboard() {
                 })
             })
 
+            socket.on('message_deleted', (id) => {
+                messageDispatch({
+                    type: 'DELETE_MESSAGE',
+                    payload: id,
+                })
+            })
+
             socket.on('new_announcement', (announcement) => {
                 setAnnouncements((announcements) => [
                     ...announcements,
@@ -296,16 +303,7 @@ export default function Dashboard() {
 
             socket.on('error', (err) => {
                 if (err.message) {
-                    toast.error(err.message, {
-                        position: 'bottom-right',
-                        autoClose: 3000,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: 'light',
-                    })
+                    toast.error(err.message)
                 }
             })
         }

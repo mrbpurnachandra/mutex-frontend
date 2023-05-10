@@ -12,5 +12,9 @@ export function messageReducer(messages, action) {
         case 'ADD_NEW_MESSAGE': {
             return [...messages, action.payload]
         }
+
+        case 'DELETE_MESSAGE': {
+            return messages.filter((m) => m.id != action.payload)
+        }
     }
 }
