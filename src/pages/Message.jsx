@@ -59,7 +59,7 @@ export default function Message() {
             })
         },
 
-        enabled: !!lastMessageId,
+        enabled: !!lastMessageId && boxRef.current.scrollTop === 0,
     })
 
     const messageDeleteMutation = useMutation({
@@ -97,6 +97,15 @@ export default function Message() {
         boxRef.current.scrollTop = boxRef.current.scrollHeight
     }
 
+    function onMessagesScroll() {
+        if (boxRef.current.scrollTop === 0) {
+            const lastMessageId = filteredMessages
+                .sort((a, b) => a.id - b.id)
+                .at(0)?.id
+            setLastMessageId(lastMessageId ?? messages[messages.length - 1].id)
+        }
+    }
+
     useEffect(() => {
         if (boxRef.current) {
             const shouldBeScrolled =
@@ -128,24 +137,8 @@ export default function Message() {
             <div
                 className='relative w-full p-3 overflow-y-scroll h-full'
                 ref={boxRef}
+                onScroll={onMessagesScroll}
             >
-                <div className='py-1 flex item-center justify-center'>
-                    <button
-                        type='button'
-                        className='py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
-                        onClick={() => {
-                            const lastMessageId = filteredMessages
-                                .sort((a, b) => a.id - b.id)
-                                .at(0)?.id
-                            setLastMessageId(
-                                lastMessageId ??
-                                    messages[messages.length - 1].id
-                            )
-                        }}
-                    >
-                        More
-                    </button>
-                </div>
                 <ul className='space-y-1.5'>
                     {filteredMessages.map((message) => (
                         <MessageCard
