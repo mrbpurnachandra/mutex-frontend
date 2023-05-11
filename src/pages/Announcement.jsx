@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
@@ -7,6 +7,13 @@ import { useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ErrorElement from '../components/ErrorElement'
 import ImageUpload from '../components/ImageUpload'
+import { Dialog, Listbox, Transition } from '@headlessui/react'
+import {
+    CheckIcon,
+    ChevronUpDownIcon,
+    MegaphoneIcon,
+} from '@heroicons/react/20/solid'
+import { toast } from 'react-toastify'
 
 export default function Announcement() {
     const user = getUser()
@@ -30,18 +37,15 @@ export default function Announcement() {
 
     const [announcement, setAnnouncement] = useState('')
     const [announcementImg, setAnnouncementImg] = useState(null)
-    const [classId, setClassId] = useState()
+    const [_class, setClass] = useState(null)
 
     const boxRef = useRef(null)
 
-    const filteredAnnouncements = announcements.filter(
-        (a) => user.student || a.classId === Number(classId)
-    )
     function handleSubmit(e) {
         e.preventDefault()
 
-        if (user.teacher && !classId) {
-            alert('Please select class')
+        if (user.teacher && !_class) {
+            toast.error('select class')
             return
         }
         const payload = {
@@ -55,7 +59,7 @@ export default function Announcement() {
         socket.emit('new_announcement', {
             ...payload,
             classId:
-                (classId && Number(classId)) ?? user.student.enroll.classId,
+                (_class && Number(_class.id)) ?? user.student.enroll.classId,
         })
 
         setAnnouncement('')
@@ -91,33 +95,24 @@ export default function Announcement() {
 
     return (
         <div className='flex flex-col h-full '>
-            <div className='px-8 py-4 shadow'>
+            <div className='flex space-x-4 items-center px-8 py-4 shadow'>
                 <h4 className='text-gray-700 text-lg'>Announcements</h4>
+                {_class && (
+                    <p className='flex items-center space-x-2 font-xs text-gray-600'>
+                        <span>{_class.name}</span>
+                        <span>
+                            <MegaphoneIcon className='h-6 w-6' />
+                        </span>
+                    </p>
+                )}
             </div>
-            {user.teacher && (
-                <div>
-                    <select
-                        name='classId'
-                        onChange={(e) => setClassId(e.target.value)}
-                        value={classId}
-                    >
-                        <option>Select Class</option>
-                        {classes.map((c) => {
-                            return (
-                                <option key={c.id} value={c.id}>
-                                    {c.name}
-                                </option>
-                            )
-                        })}
-                    </select>
-                </div>
-            )}
+
             <div
                 className='relative w-full p-3 overflow-y-scroll h-full'
                 ref={boxRef}
             >
                 <ul className='space-y-1.5'>
-                    {filteredAnnouncements.map((announcement) => (
+                    {announcements.map((announcement) => (
                         <AnnouncementCard
                             key={announcement.id}
                             announcement={announcement}
@@ -151,15 +146,17 @@ export default function Announcement() {
                             value={announcement}
                             onChange={(e) => setAnnouncement(e.target.value)}
                         />
-                        <button type='submit'>
-                            <svg
-                                className='w-5 h-5 text-gray-500 origin-center transform rotate-90'
-                                xmlns='http://www.w3.org/2000/svg'
-                                viewBox='0 0 20 20'
-                                fill='currentColor'
-                            >
-                                <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z' />
-                            </svg>
+                        {user.teacher && (
+                            <ClassSelection
+                                classes={classes}
+                                onClassSelect={setClass}
+                            />
+                        )}
+                        <button
+                            type='submit'
+                            className='border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'
+                        >
+                            Send
                         </button>
                     </form>
                 </div>
@@ -183,5 +180,168 @@ function AnnouncementCard({ announcement }) {
                 <span className='text-xs'>{announcement.createdAt}</span>
             </div>
         </li>
+    )
+}
+
+function ClassSelection({ classes, onClassSelect }) {
+    let [selected, setSelected] = useState(classes[0])
+    let [isOpen, setIsOpen] = useState(false)
+
+    return (
+        <>
+            <button
+                type='button'
+                onClick={() => setIsOpen(true)}
+                className='mx-8 p-1 rounded-full'
+            >
+                <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-6 h-6'
+                >
+                    <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5'
+                    />
+                </svg>
+            </button>
+
+            <Transition appear show={isOpen} as={Fragment}>
+                <Dialog
+                    as='div'
+                    className='relative z-10'
+                    onClose={() => setIsOpen(false)}
+                >
+                    <Transition.Child
+                        as={Fragment}
+                        enter='ease-out duration-300'
+                        enterFrom='opacity-0'
+                        enterTo='opacity-100'
+                        leave='ease-in duration-200'
+                        leaveFrom='opacity-100'
+                        leaveTo='opacity-0'
+                    >
+                        <div className='fixed inset-0 bg-black bg-opacity-25' />
+                    </Transition.Child>
+
+                    <div className='fixed inset-0 overflow-y-auto'>
+                        <div className='flex min-h-full items-center justify-center p-4 text-center'>
+                            <Transition.Child
+                                as={Fragment}
+                                enter='ease-out duration-300'
+                                enterFrom='opacity-0 scale-95'
+                                enterTo='opacity-100 scale-100'
+                                leave='ease-in duration-200'
+                                leaveFrom='opacity-100 scale-100'
+                                leaveTo='opacity-0 scale-95'
+                            >
+                                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                                    <Dialog.Title
+                                        as='h3'
+                                        className='text-lg font-medium leading-6 text-gray-900'
+                                    >
+                                        Select class
+                                    </Dialog.Title>
+                                    <div className='mt-2'>
+                                        <p className='text-sm text-gray-500'>
+                                            You should select class before
+                                            making new announcement.
+                                        </p>
+                                    </div>
+
+                                    <div className='my-4'>
+                                        <Listbox
+                                            value={selected}
+                                            onChange={setSelected}
+                                        >
+                                            <div className='relative mt-1'>
+                                                <Listbox.Button className='relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
+                                                    <span className='block truncate'>
+                                                        {selected.name}
+                                                    </span>
+                                                    <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                                                        <ChevronUpDownIcon
+                                                            className='h-5 w-5 text-gray-400'
+                                                            aria-hidden='true'
+                                                        />
+                                                    </span>
+                                                </Listbox.Button>
+                                                <Transition
+                                                    as={Fragment}
+                                                    leave='transition ease-in duration-100'
+                                                    leaveFrom='opacity-100'
+                                                    leaveTo='opacity-0'
+                                                >
+                                                    <Listbox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                                                        {classes.map((c) => (
+                                                            <Listbox.Option
+                                                                key={c.id}
+                                                                className={({
+                                                                    active,
+                                                                }) =>
+                                                                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                                        active
+                                                                            ? 'bg-amber-100 text-amber-900'
+                                                                            : 'text-gray-900'
+                                                                    }`
+                                                                }
+                                                                value={c}
+                                                            >
+                                                                {({
+                                                                    selected,
+                                                                }) => (
+                                                                    <>
+                                                                        <span
+                                                                            className={`block truncate ${
+                                                                                selected
+                                                                                    ? 'font-medium'
+                                                                                    : 'font-normal'
+                                                                            }`}
+                                                                        >
+                                                                            {
+                                                                                c.name
+                                                                            }
+                                                                        </span>
+                                                                        {selected ? (
+                                                                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600'>
+                                                                                <CheckIcon
+                                                                                    className='h-5 w-5'
+                                                                                    aria-hidden='true'
+                                                                                />
+                                                                            </span>
+                                                                        ) : null}
+                                                                    </>
+                                                                )}
+                                                            </Listbox.Option>
+                                                        ))}
+                                                    </Listbox.Options>
+                                                </Transition>
+                                            </div>
+                                        </Listbox>
+                                    </div>
+
+                                    <div className='mt-4'>
+                                        <button
+                                            type='button'
+                                            className='inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+                                            onClick={() => {
+                                                onClassSelect(selected)
+                                                setIsOpen(false)
+                                            }}
+                                        >
+                                            Select
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
+        </>
     )
 }
