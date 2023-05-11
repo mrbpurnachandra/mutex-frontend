@@ -169,16 +169,22 @@ export default function Announcement() {
 function AnnouncementCard({ announcement }) {
     return (
         <li className='flex justify-start'>
-            <div className='relative max-w-xl px-4 py-2 rounded-lg shadow text-gray-800 bg-gray-200'>
-                <span className='text-xs'>{announcement.user.name}</span>
-                <span className='block'>{announcement.content} </span>
+            <div className='relative max-w-xl mt-2 rounded-xl shadow bg-gray-100'>
+                <div className='px-4 py-2 flex items-center justify-between'>
+                    <span className='text-xs'>{announcement.user.name}</span>
+                </div>
+                <div className='px-4'>
+                    <span className='block'>{announcement.content} </span>
+                </div>
                 {announcement.image && (
                     <img
                         className='w-64 rounded-lg object-cover object-center shadow-md'
                         src={announcement.image}
                     />
                 )}
-                <span className='text-xs'>{announcement.createdAt}</span>
+                <div className='px-4 py-2'>
+                    <span className='text-xs'>{announcement.createdAt}</span>
+                </div>
             </div>
         </li>
     )
@@ -195,7 +201,7 @@ function ClassSelection({ classes, onClassSelect }) {
                 onClick={() => setIsOpen(true)}
                 className='mx-8 p-1 rounded-full'
             >
-                <AcademicCapIcon className='h-6 w-6'/>
+                <AcademicCapIcon className='h-6 w-6' />
             </button>
 
             <Transition appear show={isOpen} as={Fragment}>
