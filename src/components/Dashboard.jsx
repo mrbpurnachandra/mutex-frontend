@@ -14,7 +14,14 @@ import {
 } from '../context/MessageContext'
 import AnnouncementContext from '../context/AnnouncementContext'
 import { toast } from 'react-toastify'
-import { AcademicCapIcon, ArrowRightOnRectangleIcon, ChatBubbleBottomCenterTextIcon, HomeIcon, MegaphoneIcon, UserGroupIcon } from '@heroicons/react/20/solid'
+import {
+    AcademicCapIcon,
+    ArrowRightOnRectangleIcon,
+    ChatBubbleBottomCenterTextIcon,
+    HomeIcon,
+    MegaphoneIcon,
+    UserGroupIcon,
+} from '@heroicons/react/20/solid'
 
 function Brand() {
     return (
@@ -43,7 +50,7 @@ function SideBar() {
                             }
                         >
                             <span>
-                                <HomeIcon className='h-6 w-6 text-gray-600'/>
+                                <HomeIcon className='h-6 w-6' />
                             </span>
                             <p className='flex flex-col leading-tight'>
                                 <span>Home</span>
@@ -65,7 +72,7 @@ function SideBar() {
                             }
                         >
                             <span>
-                                <AcademicCapIcon className='h-6 w-6 text-gray-600'/>
+                                <AcademicCapIcon className='h-6 w-6' />
                             </span>
                             <span>Manage Teachers</span>
                         </NavLink>
@@ -78,7 +85,7 @@ function SideBar() {
                             }
                         >
                             <span>
-                                <UserGroupIcon className='h-6 w-6 text-gray-600'/>
+                                <UserGroupIcon className='h-6 w-6' />
                             </span>
                             <span>Manage Students</span>
                         </NavLink>
@@ -86,7 +93,7 @@ function SideBar() {
                 )}
                 <div className='mt-2 flex items-center space-x-4 px-4 py-2 text-gray-800 rounded-md hover:bg-blue-200'>
                     <span>
-                        <ArrowRightOnRectangleIcon className='h-6 w-6 text-gray-600'/>
+                        <ArrowRightOnRectangleIcon className='h-6 w-6' />
                     </span>
                     <span>
                         <LogoutButton />
@@ -120,7 +127,7 @@ function CommonChannel({ isStudent }) {
                         : 'mt-2 flex items-center space-x-4 px-4 py-2 text-gray-800  rounded-md hover:bg-blue-200'
                 }
             >
-                <MegaphoneIcon className='h-6 w-6 text-gray-600'/>
+                <MegaphoneIcon className='h-6 w-6' />
 
                 <p className='flex flex-col leading-tight'>
                     <span>Announcements</span>
@@ -143,8 +150,7 @@ function CommonChannel({ isStudent }) {
                         }
                     >
                         <span>
-                        <ChatBubbleBottomCenterTextIcon className='h-6 w-6 text-gray-600'/>
-
+                            <ChatBubbleBottomCenterTextIcon className='h-6 w-6' />
                         </span>
                         <p className='flex flex-col leading-tight'>
                             <span>

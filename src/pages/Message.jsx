@@ -176,7 +176,7 @@ export default function Message() {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                         />
-                         <button
+                        <button
                             type='submit'
                             className='border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'
                         >
@@ -192,12 +192,9 @@ export default function Message() {
 function MessageCard({ message, onMessageDelete }) {
     const user = getUser()
 
-    let style = 'relative max-w-xl px-4 py-2 rounded-lg shadow'
+    let style = 'relative max-w-xl rounded-xl shadow mt-2'
 
-    style +=
-        user.id === message.senderId
-            ? 'text-gray-800 bg-gray-200'
-            : 'text-gray-50 bg-blue-700'
+    style += user.id === message.senderId ? ' bg-blue-100' : ' bg-gray-100'
 
     const canDelete = getUser().id === message.senderId
     return (
@@ -209,22 +206,26 @@ function MessageCard({ message, onMessageDelete }) {
             }
         >
             <div className={style}>
-                <div className='py-2 flex items-center justify-between'>
+                <div className='px-4 py-2 flex items-center justify-between'>
                     <span className='text-xs'>{message.sender.name}</span>
                     {canDelete && (
                         <button onClick={() => onMessageDelete(message.id)}>
-                           <XMarkIcon className='h-4 w-4'/>
+                            <XMarkIcon className='h-4 w-4' />
                         </button>
                     )}
                 </div>
-                <span className='block'>{message.content} </span>
+                <div className='px-4'>
+                    <span className='block'>{message.content} </span>
+                </div>
                 {message.image && (
                     <img
                         className='w-64 rounded-lg object-cover object-center shadow-md'
                         src={message.image}
                     />
                 )}
-                <span className='text-xs'>{message.createdAt}</span>
+                <div className='px-4 py-2'>
+                    <span className='text-xs'>{message.createdAt}</span>
+                </div>
             </div>
         </li>
     )

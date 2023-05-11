@@ -39,21 +39,21 @@ export default function ImageUpload({ onImageChange }) {
         <>
             {status === 'loading' ? (
                 <span className='inline-block p-1 rounded-full'>
-                    <HandRaisedIcon className='h-6 w-6 text-gray-600' />
+                    <HandRaisedIcon className='h-6 w-6' />
                 </span>
             ) : status === 'error' ? (
                 <button
                     className='p-1 rounded-full text-red-600'
                     onClick={() => setStatus('idle')}
                 >
-                    <ExclamationCircleIcon className='h-6 w-6 text-gray-600' />
+                    <ExclamationCircleIcon className='h-6 w-6' />
                 </button>
             ) : status === 'success' ? (
                 <button
                     className='p-1 rounded-full text-green-600'
                     onClick={() => setStatus('idle')}
                 >
-                    <CheckCircleIcon className='h-6 w-6 text-gray-600' />
+                    <CheckCircleIcon className='h-6 w-6' />
                 </button>
             ) : (
                 <>
@@ -65,7 +65,7 @@ export default function ImageUpload({ onImageChange }) {
                             }
                         }}
                     >
-                        <PhotoIcon className='h-6 w-6 text-gray-600' />
+                        <PhotoIcon className='h-6 w-6' />
                     </button>
                     <input
                         type='file'
