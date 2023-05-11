@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import { getUser } from '../utils'
 import ErrorElement from './ErrorElement'
+import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/20/solid'
 
 export default function StudentCard({ enroll }) {
     const student = enroll.student
@@ -79,20 +80,7 @@ function ApprovedManagementForm({ enroll }) {
                     onClick={handleRemoveVCR}
                 >
                     <span>
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-6 h-6'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'
-                            />
-                        </svg>
+                        <TrashIcon className='h-6 w-6' />
                     </span>
                     <span>Remove VCR</span>
                 </button>
@@ -117,20 +105,7 @@ function ApprovedManagementForm({ enroll }) {
                     onClick={handleStudentRemoval}
                 >
                     <span>
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-6 h-6'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'
-                            />
-                        </svg>
+                        <TrashIcon className='h-6 w-6' />
                     </span>
                     <span>Remove</span>
                 </button>
@@ -139,20 +114,7 @@ function ApprovedManagementForm({ enroll }) {
                     onClick={handleAddVCR}
                 >
                     <span>
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-6 h-6'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M12 6v12m6-6H6'
-                            />
-                        </svg>
+                        <PlusIcon className='h-6 w-6' />
                     </span>
                     <span>Add VCR</span>
                 </button>
@@ -207,20 +169,7 @@ function EnrollAcceptOrRejectForm({ enroll }) {
                     onClick={handleStudentRemoval}
                 >
                     <span>
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-6 h-6'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'
-                            />
-                        </svg>
+                        <TrashIcon className='h-6 w-6' />
                     </span>
                     <span>Remove</span>
                 </button>
@@ -229,20 +178,8 @@ function EnrollAcceptOrRejectForm({ enroll }) {
                     onClick={handleRequestApproval}
                 >
                     <span>
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-6 h-6'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M12 6v12m6-6H6'
-                            />
-                        </svg>
+                    <PlusIcon className='h-6 w-6'/>
+                       
                     </span>
                     <span>Accept</span>
                 </button>
