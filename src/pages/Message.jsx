@@ -175,15 +175,11 @@ export default function Message() {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                         />
-                        <button type='submit'>
-                            <svg
-                                className='w-5 h-5 text-gray-500 origin-center transform rotate-90'
-                                xmlns='http://www.w3.org/2000/svg'
-                                viewBox='0 0 20 20'
-                                fill='currentColor'
-                            >
-                                <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z' />
-                            </svg>
+                         <button
+                            type='submit'
+                            className='border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'
+                        >
+                            Send
                         </button>
                     </form>
                 </div>
