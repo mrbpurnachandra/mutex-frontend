@@ -147,7 +147,7 @@ export default function Announcement() {
                             value={announcement}
                             onChange={(e) => setAnnouncement(e.target.value)}
                         />
-                        {user.teacher && (
+                        {user.teacher && Boolean(classes?.length) && (
                             <ClassSelection
                                 classes={classes}
                                 onClassSelect={setClass}
