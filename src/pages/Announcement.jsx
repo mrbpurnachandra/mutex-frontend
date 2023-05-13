@@ -40,6 +40,7 @@ export default function Announcement() {
     const [announcement, setAnnouncement] = useState('')
     const [announcementImg, setAnnouncementImg] = useState(null)
     const [_class, setClass] = useState(null)
+    const [autoScroll, setAutoScroll] = useState(false)
 
     const boxRef = useRef(null)
 
@@ -70,18 +71,10 @@ export default function Announcement() {
     }
 
     useEffect(() => {
-        if (boxRef.current) {
-            const shouldBeScrolled =
-                Math.abs(
-                    boxRef.current.scrollHeight -
-                        boxRef.current.clientHeight -
-                        boxRef.current.scrollTop
-                ) < 300
-            if (shouldBeScrolled) {
-                boxRef.current.scrollTop = boxRef.current.scrollHeight
-            }
+        if (boxRef.current && autoScroll) {
+            boxRef.current.scrollIntoView({ behavior: 'smooth' })
         }
-    })
+    }, [announcements])
 
     if (lecturerQuery.isLoading)
         return (
@@ -120,7 +113,6 @@ export default function Announcement() {
 
             <div
                 className='relative w-full p-3 overflow-y-scroll h-full'
-                ref={boxRef}
             >
                 <ul className='space-y-1.5'>
                     {announcements.map((announcement) => (
@@ -130,6 +122,7 @@ export default function Announcement() {
                         />
                     ))}
                 </ul>
+                <div ref={boxRef}></div>
             </div>
 
             <div className='w-full p-3 border-t border-gray-300'>
@@ -156,6 +149,12 @@ export default function Announcement() {
                             name='announcement'
                             value={announcement}
                             onChange={(e) => setAnnouncement(e.target.value)}
+                            onFocus={() => {
+                                if (!autoScroll) setAutoScroll(true)
+                            }}
+                            onBlur={() => {
+                                if (autoScroll) setAutoScroll(false)
+                            }}
                         />
                         {user.teacher && Boolean(classes?.length) && (
                             <ClassSelection
