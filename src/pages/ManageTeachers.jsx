@@ -3,6 +3,7 @@ import { useState } from 'react'
 import ErrorElement from '../components/ErrorElement'
 import TeacherCard from '../components/TeacherCard'
 import httpClient from '../config/axios'
+import { HandRaisedIcon } from '@heroicons/react/20/solid'
 
 export default function ManageTeachers() {
     const lecturerQuery = useQuery({
@@ -13,7 +14,12 @@ export default function ManageTeachers() {
         refetchOnWindowFocus: false,
     })
 
-    if (lecturerQuery.isLoading) return <div>Loading...</div>
+    if (lecturerQuery.isLoading)
+        return (
+            <div>
+                <HandRaisedIcon className='w-6 h-6' />
+            </div>
+        )
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
 
     let lecturers = []
@@ -87,7 +93,11 @@ function TeacherSearchBox({ lecturers }) {
                 </form>
             </div>
             <div className='px-8'>
-                {teachersQuery.isFetching && <p>Loading...</p>}
+                {teachersQuery.isFetching && (
+                    <p>
+                        <HandRaisedIcon className='w-6 h-6' />
+                    </p>
+                )}
                 {teachersQuery.error && (
                     <ErrorElement error={teachersQuery.error} />
                 )}

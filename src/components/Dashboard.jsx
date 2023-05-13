@@ -18,6 +18,7 @@ import {
     AcademicCapIcon,
     ArrowRightOnRectangleIcon,
     ChatBubbleBottomCenterTextIcon,
+    HandRaisedIcon,
     HomeIcon,
     MegaphoneIcon,
     UserGroupIcon,
@@ -114,7 +115,9 @@ function CommonChannel({ isStudent }) {
     })
 
     if (lecturerQuery.isLoading)
-        return <div className='px-4 py-2 text-gray-800'>Loading...</div>
+        return <div className='px-4 py-2 text-gray-800'>
+            <HandRaisedIcon className='h-6 w-6'/>
+        </div>
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
 
     return (

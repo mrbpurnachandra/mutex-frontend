@@ -12,6 +12,7 @@ import {
     AcademicCapIcon,
     CheckIcon,
     ChevronUpDownIcon,
+    HandRaisedIcon,
     MegaphoneIcon,
 } from '@heroicons/react/20/solid'
 import { toast } from 'react-toastify'
@@ -83,7 +84,11 @@ export default function Announcement() {
     })
 
     if (lecturerQuery.isLoading)
-        return <div className='px-4 py-2 text-gray-800'>Loading...</div>
+        return (
+            <div className='px-4 py-2 text-gray-800'>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
 
     if (
@@ -92,7 +97,12 @@ export default function Announcement() {
     )
         return navigate('/', { replace: true })
 
-    if (!socket) return <div>Loading...</div>
+    if (!socket)
+        return (
+            <div>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
 
     return (
         <div className='flex flex-col h-full '>

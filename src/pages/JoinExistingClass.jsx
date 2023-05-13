@@ -4,6 +4,7 @@ import Center from '../components/Center'
 import httpClient from '../config/axios'
 import enrollSchema from '../schemas/enroll'
 import useRefreshToken from '../hooks/useRefreshToken'
+import { HandRaisedIcon } from '@heroicons/react/20/solid'
 
 export default function JoinExistingClass() {
     const enrollMutate = useMutation({
@@ -52,7 +53,9 @@ export default function JoinExistingClass() {
                             className='w-full border border-gray-400 rounded-md px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-blue-600'
                         >
                             {classQuery.isLoading && (
-                                <option>Loading...</option>
+                                <option>
+                                    <HandRaisedIcon className='w-6 h-6' />
+                                </option>
                             )}
                             {classQuery.data &&
                                 classQuery.data.map((_class) => {

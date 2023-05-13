@@ -10,7 +10,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ImageUpload from '../components/ImageUpload'
 import { toast } from 'react-toastify'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import {
+    ChevronDoubleUpIcon,
+    HandRaisedIcon,
+    XMarkIcon,
+} from '@heroicons/react/20/solid'
 
 export default function Message() {
     const user = getUser()
@@ -24,6 +28,8 @@ export default function Message() {
     const [message, setMessage] = useState('')
     const [messageImg, setMessageImg] = useState(null)
     const [lastMessageId, setLastMessageId] = useState(undefined)
+    const [autoScroll, setAutoScroll] = useState(false)
+
     const boxRef = useRef(null)
 
     function filterMessages(messages) {
@@ -45,22 +51,24 @@ export default function Message() {
 
     const filteredMessages = filterMessages(messages)
 
-    useQuery({
+    const oldMessageQuery = useQuery({
         queryFn: () => {
             return httpClient.get(
                 `/message/${classId}/${receiverId}/${lastMessageId}`
             )
         },
         queryKey: ['lecturer', lastMessageId],
-        refetchOnWindowFocus: false,
+        staleTime: Infinity,
         onSuccess: (oldMessages) => {
-            messageDispatch({
-                type: 'ADD_OLD_MESSAGES',
-                payload: oldMessages,
-            })
+            if (oldMessages.length) {
+                messageDispatch({
+                    type: 'ADD_OLD_MESSAGES',
+                    payload: oldMessages,
+                })
+            }
         },
 
-        enabled: !!lastMessageId && boxRef.current.scrollTop === 0,
+        enabled: !!lastMessageId,
     })
 
     const messageDeleteMutation = useMutation({
@@ -95,31 +103,25 @@ export default function Message() {
 
         setMessage('')
         setMessageImg(null)
-        boxRef.current.scrollTop = boxRef.current.scrollHeight
     }
 
-    function onMessagesScroll() {
-        if (boxRef.current.scrollTop === 0) {
-            const lastMessageId = filteredMessages
-                .sort((a, b) => a.id - b.id)
-                .at(0)?.id
-            setLastMessageId(lastMessageId ?? messages[messages.length - 1].id)
+    function handleFetchOldMessages() {
+        let newLastMessageId = filteredMessages
+            .sort((a, b) => a.id - b.id)
+            .at(0)?.id
+
+        newLastMessageId = newLastMessageId ?? messages[messages.length - 1]?.id
+
+        if (newLastMessageId !== lastMessageId) {
+            setLastMessageId(newLastMessageId)
         }
     }
 
     useEffect(() => {
-        if (boxRef.current) {
-            const shouldBeScrolled =
-                Math.abs(
-                    boxRef.current.scrollHeight -
-                        boxRef.current.clientHeight -
-                        boxRef.current.scrollTop
-                ) < 500
-            if (shouldBeScrolled) {
-                boxRef.current.scrollTop = boxRef.current.scrollHeight
-            }
+        if (boxRef.current && autoScroll) {
+            boxRef.current.scrollIntoView({ behavior: 'smooth' })
         }
-    })
+    }, [messages])
 
     if (
         user.student &&
@@ -127,7 +129,12 @@ export default function Message() {
     )
         return navigate('/', { replace: true })
 
-    if (!socket) return <div>Loading...</div>
+    if (!socket)
+        return (
+            <div>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
 
     return (
         <div className='flex flex-col h-full '>
@@ -135,11 +142,18 @@ export default function Message() {
                 <h4 className='text-gray-700 text-lg'>Message</h4>
             </div>
 
-            <div
-                className='relative w-full p-3 overflow-y-scroll h-full'
-                ref={boxRef}
-                onScroll={onMessagesScroll}
-            >
+            <div className='relative w-full p-3 overflow-y-scroll h-full'>
+                <div className='mb-4 flex items-center justify-center'>
+                    {oldMessageQuery.isFetching ? (
+                        <span className='p-1 rounded-full shadow'>
+                            <HandRaisedIcon className='h-6 w-6' />
+                        </span>
+                    ) : (
+                        <button onClick={handleFetchOldMessages}>
+                            <ChevronDoubleUpIcon className='h-6 w-6' />
+                        </button>
+                    )}
+                </div>
                 <ul className='space-y-1.5'>
                     {filteredMessages.map((message) => (
                         <MessageCard
@@ -149,6 +163,7 @@ export default function Message() {
                         />
                     ))}
                 </ul>
+                <div ref={boxRef}></div>
             </div>
 
             <div className='w-full p-3 border-t border-gray-300'>
@@ -174,7 +189,15 @@ export default function Message() {
                             className='block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700'
                             name='message'
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={(e) => {
+                                setMessage(e.target.value)
+                            }}
+                            onFocus={() => {
+                                if (!autoScroll) setAutoScroll(true)
+                            }}
+                            onBlur={() => {
+                                if (autoScroll) setAutoScroll(false)
+                            }}
                         />
                         <button
                             type='submit'
