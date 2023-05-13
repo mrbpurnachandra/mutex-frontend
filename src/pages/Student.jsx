@@ -32,7 +32,9 @@ export default function Student() {
                     <ErrorElement error={studentMutation.error} />
                 )}
                 <form onSubmit={handleSubmit}>
-                    <button className='mt-4 border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'>
+                    <button 
+                    disabled={studentMutation.isLoading}
+                    className='mt-4 border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600 disabled:bg-blue-400'>
                         Continue
                     </button>
                 </form>

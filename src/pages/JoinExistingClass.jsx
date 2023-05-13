@@ -71,7 +71,9 @@ export default function JoinExistingClass() {
                                 })}
                         </select>
                     </div>
-                    <button className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'>
+                    <button 
+                    disabled={enrollMutate.isLoading}
+                    className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600 disabled:bg-blue-400'>
                         Send Join Request
                     </button>
                 </form>

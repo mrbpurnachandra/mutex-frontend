@@ -9,7 +9,7 @@ import userSchema from '../schemas/user'
 export default function Register() {
     const navigate = useNavigate()
 
-    const { data, error, mutate } = useMutation(
+    const { data, error, isLoading, mutate } = useMutation(
         (userData) => {
             const { error, value: data } = userSchema.validate(userData)
             if (error) throw error
@@ -75,7 +75,9 @@ export default function Register() {
                             placeholder='password'
                         />
                     </div>
-                    <button className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'>
+                    <button 
+                    disabled={isLoading}  
+                    className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600 disabled:bg-blue-400'>
                         Register
                     </button>
                 </form>

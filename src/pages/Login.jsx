@@ -10,7 +10,7 @@ import { storeAuthToken } from '../utils'
 export default function Login() {
     const navigate = useNavigate()
 
-    const { error, mutate } = useMutation(
+    const { error, mutate, isLoading } = useMutation(
         (userData) => {
             const { error, value: data } = authSchema.validate(userData)
             if (error) throw error
@@ -56,7 +56,9 @@ export default function Login() {
                             placeholder='password'
                         />
                     </div>
-                    <button className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'>
+                    <button 
+                    disabled={isLoading}
+                    className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600 disabled:bg-blue-400'>
                         Login
                     </button>
                 </form>
