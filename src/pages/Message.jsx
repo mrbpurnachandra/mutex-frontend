@@ -57,7 +57,7 @@ export default function Message() {
                 `/message/${classId}/${receiverId}/${lastMessageId}`
             )
         },
-        queryKey: ['lecturer', lastMessageId],
+        queryKey: ['old_messages', lastMessageId],
         staleTime: Infinity,
         onSuccess: (oldMessages) => {
             if (oldMessages.length) {

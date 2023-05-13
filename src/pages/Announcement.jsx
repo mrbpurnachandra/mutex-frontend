@@ -2,7 +2,7 @@ import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SocketContext from '../context/SocketContext'
 import { getUser } from '../utils'
-import { AnnouncementContext } from '../context/AnnouncementContext'
+import { AnnouncementContext, AnnouncementDispatchContext } from '../context/AnnouncementContext'
 import { useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ErrorElement from '../components/ErrorElement'
@@ -11,6 +11,7 @@ import { Dialog, Listbox, Transition } from '@headlessui/react'
 import {
     AcademicCapIcon,
     CheckIcon,
+    ChevronDoubleUpIcon,
     ChevronUpDownIcon,
     HandRaisedIcon,
     MegaphoneIcon,
@@ -31,6 +32,7 @@ export default function Announcement() {
 
     const socket = useContext(SocketContext)
     const announcements = useContext(AnnouncementContext)
+    const announcementDispatch = useContext(AnnouncementDispatchContext)
 
     const classes = lecturerQuery.data?.map((lecture) => ({
         id: lecture.classId,
@@ -40,9 +42,28 @@ export default function Announcement() {
     const [announcement, setAnnouncement] = useState('')
     const [announcementImg, setAnnouncementImg] = useState(null)
     const [_class, setClass] = useState(null)
+    const [lastAnnouncementId, setLastAnnouncementId] = useState(undefined)
     const [autoScroll, setAutoScroll] = useState(false)
 
     const boxRef = useRef(null)
+
+    const oldAnnouncementQuery = useQuery({
+        queryFn: () => {
+            return httpClient.get(`/announcement/old/${lastAnnouncementId}`)
+        },
+        queryKey: ['old_announcements', lastAnnouncementId],
+        staleTime: Infinity,
+        onSuccess: (oldAnnouncements) => {
+            if (oldAnnouncements.length) {
+                announcementDispatch({
+                    type: 'ADD_OLD_ANNOUNCEMENTS',
+                    payload: oldAnnouncements,
+                })
+            }
+        },
+
+        enabled: !!lastAnnouncementId,
+    })
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -67,7 +88,16 @@ export default function Announcement() {
 
         setAnnouncement('')
         setAnnouncementImg(null)
-        boxRef.current.scrollTop = boxRef.current.scrollHeight
+    }
+
+    function handleFetchOldAnnouncements() {
+        let newLastAnnouncementId = announcements
+            .sort((a, b) => a.id - b.id)
+            .at(0)?.id
+
+        if (newLastAnnouncementId !== lastAnnouncementId) {
+            setLastAnnouncementId(newLastAnnouncementId)
+        }
     }
 
     useEffect(() => {
@@ -111,9 +141,19 @@ export default function Announcement() {
                 )}
             </div>
 
-            <div
-                className='relative w-full p-3 overflow-y-scroll h-full'
-            >
+            <div className='relative w-full p-3 overflow-y-scroll h-full'>
+                <div className='mb-4 flex items-center justify-center'>
+                    {oldAnnouncementQuery.isFetching ? (
+                        <span className='p-1 rounded-full shadow'>
+                            <HandRaisedIcon className='h-6 w-6' />
+                        </span>
+                    ) : (
+                        <button onClick={handleFetchOldAnnouncements}>
+                            <ChevronDoubleUpIcon className='h-6 w-6' />
+                        </button>
+                    )}
+                </div>
+
                 <ul className='space-y-1.5'>
                     {announcements.map((announcement) => (
                         <AnnouncementCard
