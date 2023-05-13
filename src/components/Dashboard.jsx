@@ -12,7 +12,11 @@ import {
     MessageDispatchContext,
     messageReducer,
 } from '../context/MessageContext'
-import AnnouncementContext from '../context/AnnouncementContext'
+import {
+    AnnouncementContext,
+    AnnouncementDispatchContext,
+    announcementReducer,
+} from '../context/AnnouncementContext'
 import { toast } from 'react-toastify'
 import {
     AcademicCapIcon,
@@ -115,9 +119,11 @@ function CommonChannel({ isStudent }) {
     })
 
     if (lecturerQuery.isLoading)
-        return <div className='px-4 py-2 text-gray-800'>
-            <HandRaisedIcon className='h-6 w-6'/>
-        </div>
+        return (
+            <div className='px-4 py-2 text-gray-800'>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
     if (lecturerQuery.error) return <ErrorElement error={lecturerQuery.error} />
 
     return (
@@ -186,7 +192,10 @@ let lastMessageId
 let lastAnnouncementId
 export default function Dashboard() {
     const socket = useSocket()
-    const [announcements, setAnnouncements] = useState([])
+    const [announcements, announcementDispatch] = useReducer(
+        announcementReducer,
+        []
+    )
     const [messages, messageDispatch] = useReducer(messageReducer, [])
 
     lastMessageId = messages.sort((a, b) => a.id - b.id).at(0)?.id
@@ -207,10 +216,10 @@ export default function Dashboard() {
             })
 
             socket.on('old_announcements', (old_announcements) => {
-                setAnnouncements((announcements) => [
-                    ...announcements,
-                    ...old_announcements,
-                ])
+                announcementDispatch({
+                    type: 'ADD_OLD_ANNOUNCEMENTS',
+                    payload: old_announcements,
+                })
             })
 
             socket.on('new_message', (message) => {
@@ -228,10 +237,10 @@ export default function Dashboard() {
             })
 
             socket.on('new_announcement', (announcement) => {
-                setAnnouncements((announcements) => [
-                    ...announcements,
-                    announcement,
-                ])
+                announcementDispatch({
+                    type: 'ADD_NEW_ANNOUNCEMENT',
+                    payload: announcement,
+                })
             })
 
             socket.on('error', (err) => {
@@ -247,10 +256,14 @@ export default function Dashboard() {
             <MessageContext.Provider value={messages}>
                 <MessageDispatchContext.Provider value={messageDispatch}>
                     <AnnouncementContext.Provider value={announcements}>
-                        <div className='flex w-full h-full'>
-                            <SideBar />
-                            <ContentArea />
-                        </div>
+                        <AnnouncementDispatchContext.Provider
+                            value={announcementDispatch}
+                        >
+                            <div className='flex w-full h-full'>
+                                <SideBar />
+                                <ContentArea />
+                            </div>
+                        </AnnouncementDispatchContext.Provider>
                     </AnnouncementContext.Provider>
                 </MessageDispatchContext.Provider>
             </MessageContext.Provider>
