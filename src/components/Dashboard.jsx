@@ -20,6 +20,7 @@ import {
 import { toast } from 'react-toastify'
 import {
     AcademicCapIcon,
+    ArrowPathRoundedSquareIcon,
     ArrowRightOnRectangleIcon,
     ChatBubbleBottomCenterTextIcon,
     HandRaisedIcon,
@@ -112,9 +113,11 @@ function SideBar() {
 function CommonChannel({ isStudent }) {
     const lecturerQuery = useQuery({
         queryFn: () => {
+            console.log('Fetching Lecturer')
             return httpClient.get('/lecture')
         },
         queryKey: ['lecturer'],
+        refetchInterval: 15 * 60 * 1000,
         refetchOnWindowFocus: false,
     })
 
@@ -128,6 +131,21 @@ function CommonChannel({ isStudent }) {
 
     return (
         <>
+            <div className='mt-2'>
+                <button
+                    className='flex items-center space-x-4 px-4 py-2'
+                    onClick={lecturerQuery.refetch}
+                >
+                    {lecturerQuery.isFetching ? (
+                        <HandRaisedIcon className='h-6 w-6' />
+                    ) : (
+                        <>
+                            <ArrowPathRoundedSquareIcon className='h-6 w-6' />
+                            <span>Refresh</span>
+                        </>
+                    )}
+                </button>
+            </div>
             <NavLink
                 to={`/announcements`}
                 className={({ isActive }) =>
