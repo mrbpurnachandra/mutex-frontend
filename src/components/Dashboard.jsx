@@ -113,7 +113,6 @@ function SideBar() {
 function CommonChannel({ isStudent }) {
     const lecturerQuery = useQuery({
         queryFn: () => {
-            console.log('Fetching Lecturer')
             return httpClient.get('/lecture')
         },
         queryKey: ['lecturer'],
