@@ -1,77 +1,71 @@
-import { useMutation } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Card from '../components/Card'
 import Center from '../components/Center'
-import ErrorElement from '../components/ErrorElement'
+import { useMutation } from '@tanstack/react-query'
 import httpClient from '../config/axios'
-import authSchema from '../schemas/auth'
-import { storeAuthToken } from '../utils'
+import ErrorElement from '../components/ErrorElement'
 
-export default function Login() {
+export default function ChangePassword() {
     const navigate = useNavigate()
 
     const { error, mutate, isLoading } = useMutation(
         (userData) => {
-            const { error, value: data } = authSchema.validate(userData)
-            if (error) throw error
-            return httpClient.post('/auth/login', data)
+            return httpClient.post('/auth/change-password', userData)
         },
         {
-            onSuccess: (token) => {
-                storeAuthToken(token)
-                return navigate('/', { replace: true })
+            onSuccess: () => {
+                return navigate('/login', { replace: true })
             },
         }
     )
-
-    function handleLogin(e) {
+    function handleSubmit(e) {
         e.preventDefault()
         const userData = Object.fromEntries(new FormData(e.target))
         mutate(userData)
     }
+
     return (
         <Center>
             <Card>
+                <p className='text-gray-800'>Please choose strong password!</p>
+                <p className='text-gray-600 text-sm'>
+                    If the process succeeds you will be redirected to login
+                    page.
+                    <span>Please check you email for token.</span>
+                </p>
                 {error && <ErrorElement error={error} />}
-                <form onSubmit={handleLogin}>
+                <form className='mt-4' onSubmit={handleSubmit}>
                     <div className='mt-4'>
                         <label className='sr-only' htmlFor='username'>
-                            Username
-                        </label>
-                        <input
-                            className='w-full border border-gray-400 rounded-md px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-blue-600'
-                            type='text'
-                            name='username'
-                            placeholder='username'
-                        />
-                    </div>
-                    <div className='mt-4'>
-                        <label className='sr-only' htmlFor='password'>
-                            Password
+                            New Password
                         </label>
                         <input
                             className='w-full border border-gray-400 rounded-md px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-blue-600'
                             type='password'
                             name='password'
-                            placeholder='password'
+                            placeholder='new password'
                         />
                     </div>
+
+                    <div className='mt-4'>
+                        <label className='sr-only' htmlFor='username'>
+                            Token
+                        </label>
+                        <input
+                            className='w-full border border-gray-400 rounded-md px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-blue-600'
+                            type='text'
+                            name='token'
+                            placeholder='token'
+                        />
+                    </div>
+
                     <button
                         disabled={isLoading}
                         className='mt-4 w-full border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600 disabled:bg-blue-400'
                     >
-                        Login
+                        Change Password
                     </button>
                 </form>
-
-                <div className='mt-2 flex space-x-4'>
-                    <p className='underline text-sm text-gray-600'>
-                        <Link to='/register'>Don't have an account?</Link>
-                    </p>
-                    <p className='underline text-sm text-gray-600'>
-                        <Link to='/forgot-password'>Forgot password?</Link>
-                    </p>
-                </div>
             </Card>
         </Center>
     )

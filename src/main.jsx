@@ -27,6 +27,8 @@ import ManageStudents from './pages/ManageStudents'
 import Cr from './guards/Cr'
 import Message from './pages/Message'
 import Announcement from './pages/Announcement'
+import ForgotPassword from './pages/ForgotPassword'
+import ChangePassword from './pages/ChangePassword'
 
 const queryClient = new QueryClient()
 
@@ -44,11 +46,30 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                 </Guest>
                             }
                         />
+
                         <Route
                             path='/register'
                             element={
                                 <Guest>
                                     <Register />
+                                </Guest>
+                            }
+                        />
+
+                        <Route
+                            path='/forgot-password'
+                            element={
+                                <Guest>
+                                    <ForgotPassword />
+                                </Guest>
+                            }
+                        />
+
+                        <Route
+                            path='/change-password'
+                            element={
+                                <Guest>
+                                    <ChangePassword />
                                 </Guest>
                             }
                         />

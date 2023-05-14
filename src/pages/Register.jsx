@@ -83,10 +83,9 @@ export default function Register() {
                 </form>
 
                 <div className='mt-2'>
-                    <p className='text-sm text-gray-600'>
-                        Already have an account?
+                    <p className='underline text-sm text-gray-600'>
                         <Link to='/login'>
-                            <strong> Login</strong>
+                        Already have an account?
                         </Link>
                     </p>
                 </div>
