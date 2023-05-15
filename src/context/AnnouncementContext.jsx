@@ -12,5 +12,9 @@ export function announcementReducer(announcements, action) {
         case 'ADD_NEW_ANNOUNCEMENT': {
             return [...announcements, action.payload]
         }
+
+        case 'STUDENT_REMOVED': {
+            return announcements.filter((a) => a.userId != action.payload)
+        }
     }
 }

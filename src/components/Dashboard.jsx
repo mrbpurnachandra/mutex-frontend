@@ -260,6 +260,18 @@ export default function Dashboard() {
                 })
             })
 
+            socket.on('student_removed', (id) => {
+                messageDispatch({
+                    type: 'STUDENT_REMOVED',
+                    payload: id,
+                })
+
+                announcementDispatch({
+                    type: 'STUDENT_REMOVED',
+                    payload: id,
+                })
+            })
+
             socket.on('error', (err) => {
                 if (err.message) {
                     toast.error(err.message)

@@ -16,5 +16,9 @@ export function messageReducer(messages, action) {
         case 'DELETE_MESSAGE': {
             return messages.filter((m) => m.id != action.payload)
         }
+
+        case 'STUDENT_REMOVED': {
+            return messages.filter((m) => m.senderId != action.payload)
+        }
     }
 }
