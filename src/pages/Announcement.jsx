@@ -1,8 +1,11 @@
 import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SocketContext from '../context/SocketContext'
-import { getUser } from '../utils'
-import { AnnouncementContext, AnnouncementDispatchContext } from '../context/AnnouncementContext'
+import { formatDate, getUser } from '../utils'
+import {
+    AnnouncementContext,
+    AnnouncementDispatchContext,
+} from '../context/AnnouncementContext'
 import { useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ErrorElement from '../components/ErrorElement'
@@ -232,7 +235,9 @@ function AnnouncementCard({ announcement }) {
                     />
                 )}
                 <div className='px-4 py-2'>
-                    <span className='text-xs'>{announcement.createdAt}</span>
+                    <span className='text-xs'>
+                        {formatDate(announcement.createdAt)}
+                    </span>
                 </div>
             </div>
         </li>

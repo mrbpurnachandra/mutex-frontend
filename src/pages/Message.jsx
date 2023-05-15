@@ -5,7 +5,7 @@ import {
     MessageDispatchContext,
 } from '../context/MessageContext'
 import SocketContext from '../context/SocketContext'
-import { getUser } from '../utils'
+import { formatDate, getUser } from '../utils'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import httpClient from '../config/axios'
 import ImageUpload from '../components/ImageUpload'
@@ -144,7 +144,7 @@ export default function Message() {
 
             <div className='flex-1 flex overflow-auto'>
                 <div className='flex-1 flex flex-col'>
-                    <div className='p-3 overflow-y-auto'>
+                    <div className='flex-1 p-3 overflow-y-auto'>
                         <div className='mb-4 flex items-center justify-center'>
                             {oldMessageQuery.isFetching ? (
                                 <span className='p-1 rounded-full shadow'>
@@ -215,9 +215,11 @@ export default function Message() {
                     </div>
                 </div>
 
-                {receiverId === 'home' && (
-                    <div className='border left-2 w-80 p-3'>Online Students</div>
-                )}
+                {/* {receiverId === 'home' && (
+                    <div className='border left-2 w-80 p-3'>
+                        Online Students
+                    </div>
+                )} */}
             </div>
         </div>
     )
@@ -258,7 +260,9 @@ function MessageCard({ message, onMessageDelete }) {
                     />
                 )}
                 <div className='px-4 py-2'>
-                    <span className='text-xs'>{message.createdAt}</span>
+                    <span className='text-xs'>
+                        {formatDate(message.createdAt)}
+                    </span>
                 </div>
             </div>
         </li>

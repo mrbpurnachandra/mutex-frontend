@@ -1,4 +1,5 @@
 import jwtDecode from 'jwt-decode'
+import moment from 'moment'
 
 export function storeAuthToken(token) {
     localStorage.setItem('MUTEX_TOKEN', token)
@@ -22,4 +23,14 @@ export function decodeToken(token) {
 
 export function getUser() {
     return decodeToken(retriveAuthToken())
+}
+
+export function formatDate(date) {
+    let m = moment(date)
+    if (moment().diff(m, 'days') < 1) {
+        console.log(m.diff(moment(), 'days'))
+        return m.fromNow()
+    }
+
+    return m.format('MMMM Do YYYY, h:mm a')
 }
