@@ -137,76 +137,87 @@ export default function Message() {
         )
 
     return (
-        <div className='flex flex-col h-full '>
-            <div className='px-8 py-4 shadow'>
+        <div className='h-full flex flex-col'>
+            <div className='flex-none px-8 py-4 shadow'>
                 <h4 className='text-gray-700 text-lg'>Message</h4>
             </div>
 
-            <div className='relative w-full p-3 overflow-y-scroll h-full'>
-                <div className='mb-4 flex items-center justify-center'>
-                    {oldMessageQuery.isFetching ? (
-                        <span className='p-1 rounded-full shadow'>
-                            <HandRaisedIcon className='h-6 w-6' />
-                        </span>
-                    ) : (
-                        <button onClick={handleFetchOldMessages}>
-                            <ChevronDoubleUpIcon className='h-6 w-6' />
-                        </button>
-                    )}
-                </div>
-                <ul className='space-y-1.5'>
-                    {filteredMessages.map((message) => (
-                        <MessageCard
-                            key={message.id}
-                            message={message}
-                            onMessageDelete={messageDeleteMutation.mutate}
-                        />
-                    ))}
-                </ul>
-                <div ref={boxRef}></div>
-            </div>
+            <div className='flex-1 flex overflow-auto'>
+                <div className='flex-1 flex flex-col'>
+                    <div className='p-3 overflow-y-auto'>
+                        <div className='mb-4 flex items-center justify-center'>
+                            {oldMessageQuery.isFetching ? (
+                                <span className='p-1 rounded-full shadow'>
+                                    <HandRaisedIcon className='h-6 w-6' />
+                                </span>
+                            ) : (
+                                <button onClick={handleFetchOldMessages}>
+                                    <ChevronDoubleUpIcon className='h-6 w-6' />
+                                </button>
+                            )}
+                        </div>
+                        <ul className='space-y-1.5'>
+                            {filteredMessages.map((message) => (
+                                <MessageCard
+                                    key={message.id}
+                                    message={message}
+                                    onMessageDelete={
+                                        messageDeleteMutation.mutate
+                                    }
+                                />
+                            ))}
+                        </ul>
+                        <div ref={boxRef}></div>
+                    </div>
 
-            <div className='w-full p-3 border-t border-gray-300'>
-                {messageImg && (
-                    <div>
-                        <img
-                            className='w-24 max-h-24 rounded-lg object-cover object-center shadow-lg'
-                            src={messageImg}
-                        />
+                    <div className='p-3 border-t border-gray-300'>
+                        {messageImg && (
+                            <div>
+                                <img
+                                    className='w-24 max-h-24 rounded-lg object-cover object-center shadow-lg'
+                                    src={messageImg}
+                                />
+                            </div>
+                        )}
+
+                        <div className='flex items-center justify-between'>
+                            <div className='w-24'>
+                                <ImageUpload onImageChange={setMessageImg} />
+                            </div>
+                            <form
+                                onSubmit={handleSubmit}
+                                className='flex-1 flex items-center justify-between '
+                            >
+                                <input
+                                    type='text'
+                                    placeholder='Message'
+                                    className='block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700'
+                                    name='message'
+                                    value={message}
+                                    onChange={(e) => {
+                                        setMessage(e.target.value)
+                                    }}
+                                    onFocus={() => {
+                                        if (!autoScroll) setAutoScroll(true)
+                                    }}
+                                    onBlur={() => {
+                                        if (autoScroll) setAutoScroll(false)
+                                    }}
+                                />
+                                <button
+                                    type='submit'
+                                    className='border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'
+                                >
+                                    Send
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                )}
-                <div className=' flex items-center justify-between '>
-                    <div className='w-24'>
-                        <ImageUpload onImageChange={setMessageImg} />
-                    </div>
-                    <form
-                        onSubmit={handleSubmit}
-                        className='flex-1 flex items-center justify-between '
-                    >
-                        <input
-                            type='text'
-                            placeholder='Message'
-                            className='block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700'
-                            name='message'
-                            value={message}
-                            onChange={(e) => {
-                                setMessage(e.target.value)
-                            }}
-                            onFocus={() => {
-                                if (!autoScroll) setAutoScroll(true)
-                            }}
-                            onBlur={() => {
-                                if (autoScroll) setAutoScroll(false)
-                            }}
-                        />
-                        <button
-                            type='submit'
-                            className='border border-transparent rounded-md px-4 py-2 text-white font-semibold leading-tight text-sm bg-blue-600 outline-none hover:bg-blue-500 focus:ring-2 focus:ring-blue-600'
-                        >
-                            Send
-                        </button>
-                    </form>
                 </div>
+
+                {receiverId === 'home' && (
+                    <div className='border left-2 w-80 p-3'>Online Students</div>
+                )}
             </div>
         </div>
     )
