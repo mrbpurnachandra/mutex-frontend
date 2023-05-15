@@ -30,7 +30,16 @@ import Announcement from './pages/Announcement'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePassword'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+    defaultOptions: {
+        mutations: {
+            networkMode: 'always',
+        },
+        queries: {
+            networkMode: 'always',
+        },
+    },
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
