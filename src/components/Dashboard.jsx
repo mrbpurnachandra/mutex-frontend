@@ -207,10 +207,19 @@ function ContentArea() {
 
 let lastMessageId
 let lastAnnouncementId
+const messageAudio = new Audio(
+    'https://firebasestorage.googleapis.com/v0/b/mutex-11dd2.appspot.com/o/sound%2Fthe-notification-email-143029.mp3?alt=media&token=360313b9-2c54-4577-9015-6125750f1a6d'
+)
+
+const announcementAudio = new Audio(
+    'https://firebasestorage.googleapis.com/v0/b/mutex-11dd2.appspot.com/o/sound%2Fplayful-notification.mp3?alt=media&token=826c8d0b-9190-4cea-a446-325f91a7c814'
+)
+
 export default function Dashboard() {
     const socket = useSocket()
     const navigate = useNavigate()
-    
+    const user = getUser()
+
     const [announcements, announcementDispatch] = useReducer(
         announcementReducer,
         []
@@ -246,6 +255,10 @@ export default function Dashboard() {
                     type: 'ADD_NEW_MESSAGE',
                     payload: message,
                 })
+
+                if (message.senderId !== user.id) {
+                    messageAudio.play()
+                }
             })
 
             socket.on('message_deleted', (id) => {
@@ -260,10 +273,14 @@ export default function Dashboard() {
                     type: 'ADD_NEW_ANNOUNCEMENT',
                     payload: announcement,
                 })
+
+                if (announcement.userId !== user.id) {
+                    announcementAudio.play()
+                }
             })
 
             socket.on('student_removed', (id) => {
-                if(id == getUser().id) {
+                if (id == getUser().id) {
                     deleteAuthToken()
                     navigate('/login', { replace: true })
                 }
