@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useReducer, useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import httpClient from '../config/axios'
 import useSocket from '../hooks/useSocket'
-import { getUser } from '../utils'
+import { deleteAuthToken, getUser } from '../utils'
 import LogoutButton from './LogoutButton'
 import ErrorElement from '../components/ErrorElement'
 import SocketContext from '../context/SocketContext'
@@ -209,6 +209,8 @@ let lastMessageId
 let lastAnnouncementId
 export default function Dashboard() {
     const socket = useSocket()
+    const navigate = useNavigate()
+    
     const [announcements, announcementDispatch] = useReducer(
         announcementReducer,
         []
@@ -261,6 +263,10 @@ export default function Dashboard() {
             })
 
             socket.on('student_removed', (id) => {
+                if(id == getUser().id) {
+                    deleteAuthToken()
+                    navigate('/login', { replace: true })
+                }
                 messageDispatch({
                     type: 'STUDENT_REMOVED',
                     payload: id,
