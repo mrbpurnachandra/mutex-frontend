@@ -18,6 +18,7 @@ import {
     UserCircleIcon,
     XMarkIcon,
 } from '@heroicons/react/20/solid'
+import useSocket from '../hooks/useSocket'
 
 export default function Message() {
     const user = getUser()
@@ -218,11 +219,7 @@ export default function Message() {
                     </div>
                 </div>
 
-                {/* {receiverId === 'home' && (
-                    <div className='border left-2 w-80 p-3'>
-                        Online Students
-                    </div>
-                )} */}
+                {receiverId === 'home' && <OnlineStudents />}
 
                 {user.student && !isNaN(Number(receiverId)) && (
                     <TeacherInfo teacherUserId={receiverId} />
@@ -231,6 +228,56 @@ export default function Message() {
                 {user.teacher && !isNaN(Number(classId)) && (
                     <ClassInfo classId={classId} />
                 )}
+            </div>
+        </div>
+    )
+}
+
+function OnlineStudents() {
+    const socket = useSocket()
+    const [onlineStudents, setOnlineStudents] = useState([])
+
+    useEffect(() => {
+        let timer
+
+        if (socket) {
+            socket.emit('send_online_students')
+            timer = setInterval(() => {
+                console.log('Emitting')
+                socket.emit('send_online_students')
+            }, [5000])
+        }
+
+        return () => {
+            clearInterval(timer)
+        }
+    }, [socket])
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('online_students', (students) => {
+                setOnlineStudents(students)
+            })
+        }
+    }, [socket])
+
+    return (
+        <div className='flex flex-col items-center border left-2 w-80 p-3'>
+            <div className='w-full'>
+                <ul>
+                    {onlineStudents.map((s) => (
+                        <li
+                            className='flex flex-col px-4 py-2 rounded border text-sm'
+                            key={s.username}
+                        >
+                            <p className='flex items-center space-x-2'>
+                                <span className='font-semibold'>{s.name}</span>
+                                <span className='inline-block w-2 h-2 bg-green-600 rounded-full'></span>
+                            </p>
+                            <span className='text-gray-600'>@{s.username}</span>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     )
