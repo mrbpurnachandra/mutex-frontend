@@ -28,7 +28,6 @@ export function getUser() {
 export function formatDate(date) {
     let m = moment(date)
     if (moment().diff(m, 'days') < 1) {
-        console.log(m.diff(moment(), 'days'))
         return m.fromNow()
     }
 

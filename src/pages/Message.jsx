@@ -11,8 +11,11 @@ import httpClient from '../config/axios'
 import ImageUpload from '../components/ImageUpload'
 import { toast } from 'react-toastify'
 import {
+    AcademicCapIcon,
     ChevronDoubleUpIcon,
+    ExclamationCircleIcon,
     HandRaisedIcon,
+    UserCircleIcon,
     XMarkIcon,
 } from '@heroicons/react/20/solid'
 
@@ -220,6 +223,106 @@ export default function Message() {
                         Online Students
                     </div>
                 )} */}
+
+                {user.student && !isNaN(Number(receiverId)) && (
+                    <TeacherInfo teacherUserId={receiverId} />
+                )}
+
+                {user.teacher && !isNaN(Number(classId)) && (
+                    <ClassInfo classId={classId} />
+                )}
+            </div>
+        </div>
+    )
+}
+
+function TeacherInfo({ teacherUserId }) {
+    const teacherQuery = useQuery({
+        queryFn: () => {
+            return httpClient.get(`teacher/user/${teacherUserId}`)
+        },
+        queryKey: ['teacher', teacherUserId],
+        cacheTime: 5 * 60 * 1000,
+        enabled: !!teacherUserId,
+    })
+
+    if (teacherQuery.isLoading)
+        return (
+            <div className='flex flex-col items-center border left-2 w-80 h-full p-3'>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
+
+    if (teacherQuery.isError)
+        return (
+            <div className='flex flex-col items-center border left-2 w-80 h-full p-3'>
+                <ExclamationCircleIcon className='h-6 w-6' />
+            </div>
+        )
+
+    let teacher = teacherQuery.data
+    return (
+        <div className='flex flex-col items-center border left-2 w-80 p-3'>
+            <div className='mt-12 flex flex-col items-center'>
+                <span>
+                    <UserCircleIcon className='w-32 text-gray-600' />
+                </span>
+                <p className='mt-2 font-semibold text-lg text-gray-800'>
+                    {teacher.user.name}
+                </p>
+                <span className='text-sm text-gray-600'>
+                    @{teacher.user.username}
+                </span>
+            </div>
+
+            <div className='mt-4 text-sm text-gray-800'>
+                <p>{teacher.description}</p>
+            </div>
+        </div>
+    )
+}
+
+function ClassInfo({ classId }) {
+    const classQuery = useQuery({
+        queryFn: () => {
+            return httpClient.get(`class//${classId}`)
+        },
+        queryKey: ['class', classId],
+        cacheTime: 5 * 60 * 1000,
+        enabled: !!classId,
+    })
+
+    if (classQuery.isLoading)
+        return (
+            <div className='flex flex-col items-center border left-2 w-80 h-full p-3'>
+                <HandRaisedIcon className='h-6 w-6' />
+            </div>
+        )
+
+    if (classQuery.isError)
+        return (
+            <div className='flex flex-col items-center border left-2 w-80 h-full p-3'>
+                <ExclamationCircleIcon className='h-6 w-6' />
+            </div>
+        )
+
+    let _class = classQuery.data
+    return (
+        <div className='flex flex-col items-center border left-2 w-80 h-full p-3'>
+            <div className='mt-12 flex flex-col items-center'>
+                <span>
+                    <AcademicCapIcon className='w-32 text-gray-600' />
+                </span>
+                <p className='mt-2 font-semibold text-lg text-gray-800'>
+                    {_class.name}
+                </p>
+                <span className='text-sm text-gray-600'>
+                    @{_class.cr.user.username}
+                </span>
+            </div>
+
+            <div className='mt-4 text-sm text-gray-800'>
+                <p>{_class.description}</p>
             </div>
         </div>
     )
