@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './index.css'
 import Guest from './guards/Guest'
-import Auth from './guards/Auth'
+import VerifiedAuth from './guards/VerifiedAuth'
 import NoRole from './guards/NoRole'
 import HasRole from './guards/HasRole'
 import StudentGuard from './guards/Student'
@@ -29,6 +29,8 @@ import Message from './pages/Message'
 import Announcement from './pages/Announcement'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePassword'
+import UnverifiedAuth from './guards/UnverifiedAuth'
+import VerifyAccount from './pages/VerifyAccount'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -84,39 +86,48 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                         />
 
                         <Route
+                            path='/verify'
+                            element={
+                                <UnverifiedAuth>
+                                    <VerifyAccount />
+                                </UnverifiedAuth>
+                            }
+                        />
+
+                        <Route
                             path='/'
                             element={
-                                <Auth>
+                                <VerifiedAuth>
                                     <HasRole>
                                         <Index />
                                     </HasRole>
-                                </Auth>
+                                </VerifiedAuth>
                             }
                         >
                             <Route
                                 path='message/:classId/:receiverId'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <HasRole>
                                             <Message />
                                         </HasRole>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             ></Route>
                             <Route
                                 path='announcements'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <HasRole>
                                             <Announcement />
                                         </HasRole>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             ></Route>
                             <Route
                                 path='manage/teachers'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <Enrolled>
                                                 <Cr>
@@ -124,13 +135,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                                 </Cr>
                                             </Enrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='manage/students'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <Enrolled>
                                                 <Cr>
@@ -138,7 +149,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                                 </Cr>
                                             </Enrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                         </Route>
@@ -147,73 +158,73 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             <Route
                                 index
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <NoRole>
                                             <Role />
                                         </NoRole>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='teacher'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <NoRole>
                                             <Teacher />
                                         </NoRole>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='student'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <NoRole>
                                             <Student />
                                         </NoRole>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='student/enroll-options'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <NotEnrolled>
                                                 <EnrollOptions />
                                             </NotEnrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='student/join-existing-class'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <NotEnrolled>
                                                 <JoinExistingClass />
                                             </NotEnrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='student/create-new-class'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <NotEnrolled>
                                                 <CreateNewClass />
                                             </NotEnrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                             <Route
                                 path='student/pending'
                                 element={
-                                    <Auth>
+                                    <VerifiedAuth>
                                         <StudentGuard>
                                             <Enrolled>
                                                 <Pending>
@@ -221,7 +232,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                                 </Pending>
                                             </Enrolled>
                                         </StudentGuard>
-                                    </Auth>
+                                    </VerifiedAuth>
                                 }
                             />
                         </Route>
