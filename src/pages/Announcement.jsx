@@ -20,6 +20,7 @@ import {
     MegaphoneIcon,
 } from '@heroicons/react/20/solid'
 import { toast } from 'react-toastify'
+import ImageModal from '../components/ImageModal'
 
 export default function Announcement() {
     const user = getUser()
@@ -219,23 +220,39 @@ export default function Announcement() {
 }
 
 function AnnouncementCard({ announcement }) {
+    const [modalOpen, setModalOpen] = useState(false)
+
     return (
         <li className='flex justify-start'>
             <div className='relative max-w-xl mt-2 rounded-xl shadow bg-gray-100'>
                 <div className='px-4 py-2 flex items-center justify-between space-x-4'>
                     <span className='text-xs'>{announcement.user.name}</span>
-                    { getUser().teacher && <span className='text-gray-600 text-xs'>
-                        {announcement.class.name}
-                    </span>}
+                    {getUser().teacher && (
+                        <span className='text-gray-600 text-xs'>
+                            {announcement.class.name}
+                        </span>
+                    )}
                 </div>
                 <div className='px-4'>
                     <span className='block'>{announcement.content} </span>
                 </div>
                 {announcement.image && (
-                    <img
-                        className='w-64 rounded-lg object-cover object-center shadow-md'
-                        src={announcement.image}
-                    />
+                    <>
+                        <img
+                            onClick={() => setModalOpen(true)}
+                            className='w-64 rounded-lg object-cover object-center shadow-md cursor-pointer'
+                            src={announcement.image}
+                        />
+                        <ImageModal
+                            isOpen={modalOpen}
+                            closeModal={() => setModalOpen(false)}
+                        >
+                            <img
+                                className='w-full rounded object-cover object-center'
+                                src={announcement.image}
+                            />
+                        </ImageModal>
+                    </>
                 )}
                 <div className='px-4 py-2'>
                     <span className='text-xs'>

@@ -19,6 +19,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/20/solid'
 import useSocket from '../hooks/useSocket'
+import ImageModal from '../components/ImageModal'
 
 export default function Message() {
     const user = getUser()
@@ -377,6 +378,7 @@ function ClassInfo({ classId }) {
 
 function MessageCard({ message, onMessageDelete }) {
     const user = getUser()
+    const [modalOpen, setModalOpen] = useState(false)
 
     let style = 'relative max-w-xl rounded-xl shadow mt-2'
 
@@ -404,10 +406,22 @@ function MessageCard({ message, onMessageDelete }) {
                     <span className='block'>{message.content} </span>
                 </div>
                 {message.image && (
-                    <img
-                        className='w-64 rounded-lg object-cover object-center shadow-md'
-                        src={message.image}
-                    />
+                    <>
+                        <img
+                            onClick={() => setModalOpen(true)}
+                            className='w-64 rounded-lg object-cover object-center shadow-md cursor-pointer'
+                            src={message.image}
+                        />
+                        <ImageModal
+                            isOpen={modalOpen}
+                            closeModal={() => setModalOpen(false)}
+                        >
+                            <img
+                                className='w-full rounded object-cover object-center'
+                                src={message.image}
+                            />
+                        </ImageModal>
+                    </>
                 )}
                 <div className='px-4 py-2'>
                     <span className='text-xs'>

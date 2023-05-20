@@ -59,7 +59,10 @@ function SideBar() {
                                 <HomeIcon className='h-6 w-6' />
                             </span>
                             <p className='flex flex-col leading-tight'>
-                                <span>Home</span>
+                                <span>
+                                    {user.student?.enroll?.class?.name ??
+                                        'Home'}
+                                </span>
                             </p>
                         </NavLink>
                     )}
@@ -273,8 +276,6 @@ export default function Dashboard() {
                     type: 'ADD_NEW_ANNOUNCEMENT',
                     payload: announcement,
                 })
-
-                console.log(announcement)
 
                 if (announcement.userId !== user.id) {
                     announcementAudio.play()
