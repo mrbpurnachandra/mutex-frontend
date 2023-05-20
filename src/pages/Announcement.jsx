@@ -222,8 +222,11 @@ function AnnouncementCard({ announcement }) {
     return (
         <li className='flex justify-start'>
             <div className='relative max-w-xl mt-2 rounded-xl shadow bg-gray-100'>
-                <div className='px-4 py-2 flex items-center justify-between'>
+                <div className='px-4 py-2 flex items-center justify-between space-x-4'>
                     <span className='text-xs'>{announcement.user.name}</span>
+                    { getUser().teacher && <span className='text-gray-600 text-xs'>
+                        {announcement.class.name}
+                    </span>}
                 </div>
                 <div className='px-4'>
                     <span className='block'>{announcement.content} </span>

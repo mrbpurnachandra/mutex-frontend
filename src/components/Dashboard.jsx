@@ -274,6 +274,8 @@ export default function Dashboard() {
                     payload: announcement,
                 })
 
+                console.log(announcement)
+
                 if (announcement.userId !== user.id) {
                     announcementAudio.play()
                 }

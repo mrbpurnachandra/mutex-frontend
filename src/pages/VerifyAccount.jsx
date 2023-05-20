@@ -35,7 +35,6 @@ export default function VerifyAccount() {
             toast.success('Token Sent')
         },
     })
-    console.log(data)
 
     const errorElem = useRefreshToken(!!data)
     if (errorElem) return errorElem
