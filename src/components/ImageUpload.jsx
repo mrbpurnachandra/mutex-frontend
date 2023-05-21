@@ -8,6 +8,7 @@ import {
     HandRaisedIcon,
     PhotoIcon,
 } from '@heroicons/react/20/solid'
+import { toast } from 'react-toastify'
 
 export default function ImageUpload({ onImageChange }) {
     const [status, setStatus] = useState('idle')
@@ -17,11 +18,19 @@ export default function ImageUpload({ onImageChange }) {
         try {
             const file = e.target.files[0]
             const memeType = file.type
+            const size = file.size
             const regex = /image\/(jpg|jpeg|png|gif)$/
             if (!regex.test(memeType)) {
-                alert('Select valid image')
+                toast.error('Select valid image')
                 return
             }
+
+            if(size > 5242880) {
+                toast.error('Image size should be less than 5 MB')
+                return
+            }
+
+
 
             setStatus('loading')
             const storageRef = ref(storage, `image/${file.name}-${v4()}`)
