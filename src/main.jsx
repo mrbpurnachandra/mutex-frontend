@@ -31,6 +31,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePassword'
 import UnverifiedAuth from './guards/UnverifiedAuth'
 import VerifyAccount from './pages/VerifyAccount'
+import Intro from './pages/Intro'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -104,6 +105,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                 </VerifiedAuth>
                             }
                         >
+                            <Route
+                                index
+                                element={
+                                    <VerifiedAuth>
+                                        <HasRole>
+                                            <Intro />
+                                        </HasRole>
+                                    </VerifiedAuth>
+                                }
+                            />
                             <Route
                                 path='message/:classId/:receiverId'
                                 element={
